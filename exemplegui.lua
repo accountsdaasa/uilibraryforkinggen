@@ -1,4 +1,4 @@
--- 1. Load the V6 Library
+-- 1. Load the Library
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua"))()
 
 -- 2. Create Window (Name & Config File)
