@@ -1,9 +1,9 @@
--- 1. Load the Library
+-- 1. Load the Library 
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua"))()
 
--- 2. Create Window (Name & Config File)
+-- 2. Create Window
 local Window = Library:Window({
-    ConfigName = "putnameofgamehere.json"
+    ConfigName = "CompleteExampleConfig.json"
 })
 
 if not Window then return end
@@ -14,86 +14,106 @@ local CombatTab = Window:Tab("Combat")
 local SettingsTab = Window:Tab("Settings")
 
 -- =========================================
--- [MAIN TAB] - Toggles
+-- [MAIN TAB] - Toggles & Dependencies
 -- =========================================
 
-MainTab:Toggle({
+-- Toggle 1: Auto Farm
+local autoFarmToggle = MainTab:Toggle({
     Name = "Auto Farm",
-    Flag = "AutoFarmKey", -- Flag for saving
+    Flag = "AutoFarm",
     Default = false,
     Callback = function(value)
-        -- ---script here
-        print("Auto Farm:", value)
+        print("Auto Farm is:", value)
     end
 })
 
-MainTab:Toggle({
-    Name = "Auto Collect",
-    Flag = "AutoCollectKey",
+-- Toggle 2: Auto Quest (Cannot be enabled if Auto Farm is ON)
+local autoQuestToggle = MainTab:Toggle({
+    Name = "Auto Quest",
+    Flag = "AutoQuest",
     Default = false,
+    Condition = function()
+        -- Vérifie l'état de l'autre toggle
+        if Library.Flags["AutoFarm"] then
+            return false, "Veuillez désactiver Auto Farm d'abord !"
+        end
+        return true
+    end,
     Callback = function(value)
-        -- ---script here
+        print("Auto Quest is:", value)
     end
 })
 
--- =========================================
--- [COMBAT TAB] - Sliders & Buttons
--- =========================================
-
-CombatTab:Slider({
-    Name = "Walk Speed",
-    Flag = "WalkSpeedKey",
-    Min = 16,
-    Max = 200,
-    Default = 16,
-    Callback = function(value)
-        -- ---script here
-        print("Speed:", value)
-    end
-})
-
-CombatTab:Button({
-    Name = "Kill All Mobs",
+-- Button
+MainTab:Button({
+    Name = "Redeem Codes",
     Callback = function()
-        -- ---script here
-        print("Killed all mobs")
+        print("Redeeming codes...")
     end
 })
 
 -- =========================================
--- [SETTINGS TAB] - Dropdowns & Cycles
+-- [COMBAT TAB] - Dropdowns & TextBoxes
 -- =========================================
 
-SettingsTab:Dropdown({
+-- Single Dropdown (Dropdown)
+CombatTab:Dropdown({
     Name = "Select Weapon",
     Flag = "WeaponSelect",
-    List = {"Katana", "Scythe", "Bow", "Fists"},
+    List = {"Katana", "Scythe", "Dual Blades", "Fists"},
     Default = "Katana",
     Callback = function(item)
-        -- ---script here
         print("Selected:", item)
     end
 })
 
+-- Multi Dropdown (Dropdown Multiple)
+CombatTab:MultiDropdown({
+    Name = "Select Mobs",
+    Flag = "MobMultiSelect",
+    List = {"Zombie", "Skeleton", "Boss", "Orc"},
+    Callback = function(list)
+        -- Traitement de la liste
+    end
+})
+
+-- TextBox
+CombatTab:TextBox({
+    Name = "Player Target",
+    Flag = "TargetPlayerName",
+    Default = "",
+    Placeholder = "Enter player name...",
+    Callback = function(text)
+        print("Target set to:", text)
+    end
+})
+
+-- =========================================
+-- [SETTINGS TAB] - Sliders & Cycles
+-- =========================================
+
+-- Slider
+SettingsTab:Slider({
+    Name = "Walk Speed",
+    Flag = "WalkSpeed",
+    Min = 16,
+    Max = 200,
+    Default = 16,
+    Callback = function(val)
+        print("Speed:", val)
+    end
+})
+
+-- Cycle Button (Dropdown Single/Cycle)
 SettingsTab:Cycle({
     Name = "Teleport Mode",
     Flag = "TPMode",
     List = {"Above", "Below", "Behind"},
-    Default = "Behind",
+    Default = "Above",
     Callback = function(mode)
-        -- ---script here
         print("TP Mode:", mode)
     end
 })
 
-SettingsTab:MultiDropdown({
-    Name = "Target Mobs",
-    Flag = "TargetMobList",
-    List = {"Zombie", "Skeleton", "Boss"},
-    Callback = function(list)
-        -- ---script here
-    end
-})
-
--- 4. Initialize (Credits Page)
+-- 4. Initialize Credits
 Window:Init()
