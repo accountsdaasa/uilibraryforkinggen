@@ -1,46 +1,115 @@
-local Library = loadstring(game:HttpGet("[https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua](https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua)"))()
+-- [[ 1. EXECUTION PROTECTION ]]
+if _G.KingGenExecuted then
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "King Gen",
+        Text = "Script already running!",
+        Duration = 5
+    })
+    return
+end
+_G.KingGenExecuted = true
 
+-- [[ 2. LOAD UI LIBRARY ]]
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua"))()
+
+-- [[ 3. GLOBAL LOGIC / BACKEND ]]
+local logic = {
+    main = {
+        autoFarm = false,
+        autoCollect = false,
+        speed = 16,
+    },
+    settings = {
+        targetMob = "Zombie",
+        teleportMode = "CFrame",
+    }
+}
+
+-- [[ LOOP EXAMPLE (Runs the script logic based on 'logic' table) ]]
+task.spawn(function()
+    local lp = game.Players.LocalPlayer
+    
+    while task.wait(0.1) do
+        -- WalkSpeed Logic
+        if lp.Character and lp.Character:FindFirstChild("Humanoid") then
+            lp.Character.Humanoid.WalkSpeed = logic.main.speed
+        end
+
+        -- Auto Farm Logic
+        if logic.main.autoFarm then
+            -- --- PUT YOUR CONTINUOUS FARMING SCRIPT HERE ---
+            print("Auto Farming active! Target:", logic.settings.targetMob, "using TP mode:", logic.settings.teleportMode)
+            task.wait(1)
+            -- ---------------------------------------------
+        end
+    end
+end)
+
+
+-- [[ 4. CREATE WINDOW AND TABS ]]
 local Window = Library:CreateWindow({
-    Title = "King Gen - Universal Test",
-    ConfigFolder = "KingGen_Test"
+    -- Le titre est désormais fixé à "King Gen" dans baseui.lua
+    ConfigFolder = "KingGen_GenericScript"
 })
 
-local Tab1 = Window:AddTab("Farming")
-local Tab2 = Window:AddTab("Settings")
+local MainTab = Window:AddTab("Main")
+local PlayerTab = Window:AddTab("Player")
+local SettingsTab = Window:AddTab("Settings")
 
-Tab1:AddToggle({
-    Name = "Enable Auto Farm",
-    Flag = "FarmOn",
+
+-- [[ 5. ADD UI ELEMENTS ]]
+
+-- TAB 1: Main
+MainTab:AddToggle({
+    Name = "Auto Farm",
+    Flag = "Toggle_Farm",
     Default = false,
-    Callback = function(v) print("Farm:", v) end
-})
-
-Tab1:AddDropdown({
-    Name = "Select Mobs",
-    Flag = "MobList",
-    List = {"Goblin", "Orc", "Dragon"},
-    Multi = true,
-    Default = {["Goblin"] = true},
-    Callback = function(t) 
-        for k,v in pairs(t) do if v then print(k) end end
+    Callback = function(Value)
+        logic.main.autoFarm = Value
+        -- --- PUT SCRIPT HERE: Initialisation/Désinitialisation de l'Auto Farm ---
+        print("Auto Farm set to:", Value)
+        -- ---------------------------------------------------------------------
     end
 })
 
-Tab2:AddSlider({
-    Name = "Attack Distance",
-    Flag = "Dist",
-    Min = 5,
-    Max = 50,
-    Default = 10,
-    Callback = function(v) print("Dist:", v) end
+-- TAB 2: Player
+PlayerTab:AddSlider({
+    Name = "WalkSpeed",
+    Flag = "Slider_WS",
+    Min = 16,
+    Max = 200,
+    Default = 16,
+    Callback = function(Value)
+        logic.main.speed = Value
+    end
 })
 
-Tab2:AddButtonDropdown({
-    Name = "Teleport Method",
-    Flag = "TPMethod",
-    List = {"Tween", "CFrame", "Bypass"},
-    Default = "Tween",
-    Callback = function(v) print("TP:", v) end
+
+-- TAB 3: Settings
+SettingsTab:AddDropdown({
+    Name = "Select Mob Target",
+    Flag = "Drop_Mob",
+    List = {"Zombie", "Skeleton", "Golem", "Boss"},
+    Multi = false,
+    Default = "Zombie",
+    Callback = function(Value)
+        logic.settings.targetMob = Value
+    end
 })
 
-Library:Notify({Title="King Gen", Text="Loaded Successfully!", Duration=5})
+SettingsTab:AddButtonDropdown({
+    Name = "Teleport Mode",
+    Flag = "Cycle_TP",
+    List = {"CFrame", "Tween", "Bypass"},
+    Default = "CFrame",
+    Callback = function(Value)
+        logic.settings.teleportMode = Value
+    end
+})
+
+-- [[ 6. NOTIFICATION ]]
+Library:Notify({
+    Title = "King Gen",
+    Text = "Script Loaded (Template)",
+    Duration = 5
+})
