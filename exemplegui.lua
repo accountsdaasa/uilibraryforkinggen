@@ -1,118 +1,127 @@
 -- ================================================================= --
 --                             KING GEN UI USAGE EXAMPLE
---               Illustrates all major control types (V8 API)
+--              Complete Example with All Controls + 'Reset Player' Toggle
 -- ================================================================= --
 
--- 1. LOADING STRING
+-- 1. LIBRARY LOADING (Assumes the fixed KingGen UI script is loaded)
 local Library = loadstring(game:HttpGet('https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua', true))()
 
 -- --- Window Setup ---
 
 local Window = Library:Window({
-    ConfigName = "kinggen_example.json" -- Configuration file for saving settings
+    ConfigName = "kinggen_full_demo.json" -- Configuration file for saving settings
 })
 
 -- --- Tab Definitions ---
 
-local MainTab = Window:Tab("Core Functions")
-local SettingsTab = Window:Tab("Visuals & Input")
+local MainTab = Window:Tab("Main")
+local SettingsTab = Window:Tab("Settings")
 
--- --- CORE FUNCTIONS TAB ---
+-- --- CORE TAB (Essential Features) ---
 
--- 2. TOGGLE (Auto-Executing Loop / Persistent Feature)
+-- 2. TOGGLE SPECIAL (Reset Player Loop - Kills the player repeatedly)
 MainTab:Toggle({
-    Name = "Auto Farm Enabled",
-    Flag = "AutoFarmActive",
+    Name = "Reset Player (Loop)", -- Name of the Toggle
+    Flag = "ResetPlayerActive",
     Default = false,
-    Delay = 0.5, -- Loop execution rate (0.5 seconds)
+    Delay = 1.0, -- Kills the player every 1.0 second while ON
     
     Condition = function()
-        -- Optional: Check before activating
-        local playerIsReady = true 
-        return playerIsReady, "Player is not yet ready for auto-farming."
+        -- Optional: Safety or validation check before turning ON
+        return true
     end,
     
     Callback = function(IsActive)
+        local LocalPlayer = game.Players.LocalPlayer
+        
         if IsActive then
-            -- Logic that runs repeatedly while the toggle is ON
-            print("Auto-Farm loop: Executing attack command...")
+            -- Logic that runs repeatedly while the toggle is ON: Kill the player
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                LocalPlayer.Character.Humanoid.Health = 0
+                print("Killing player: Resetting...")
+            end
         else
-            -- Logic that runs once when the toggle is turned OFF (Cleanup)
-            print("Auto-Farm stopped. Cleaning up threads.")
+            -- Logic that runs once when the toggle is turned OFF (Cleanup/Stop)
+            print("Reset Player Loop stopped.")
         end
     end
 })
 
 -- 3. BUTTON (One-time Action)
 MainTab:Button({
-    Name = "Teleport to Safezone",
+    Name = "Instant Teleport to Spawn",
     Callback = function()
-        print("Attempting to teleport to Safezone...")
-        -- Example implementation: game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(...)
+        print("Teleporting to spawn...")
+        local Char = game.Players.LocalPlayer.Character
+        if Char and game.Workspace:FindFirstChild("SpawnLocation") then
+            -- Note: In a real game, you would need better teleport logic
+            Char:SetPrimaryPartCFrame(game.Workspace.SpawnLocation.CFrame)
+        end
     end
 })
 
 -- 4. SLIDER (Value adjustment)
 MainTab:Slider({
-    Name = "Player Speed Multiplier",
-    Flag = "WalkspeedValue",
-    Min = 16,
-    Max = 100,
-    Default = 20,
+    Name = "Jump Power Adjustment",
+    Flag = "JumpPowerValue",
+    Min = 50,
+    Max = 200,
+    Default = 50,
     Callback = function(NewValue)
         local Humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
         if Humanoid then
-            Humanoid.WalkSpeed = NewValue
+            Humanoid.JumpPower = NewValue
         end
-        print("Speed set to: " .. NewValue)
+        print("Jump Power set to: " .. NewValue)
     end
 })
 
--- --- VISUALS & INPUT TAB ---
+---
+## ✨ Customization Tab (Settings)
 
 -- 5. DROPDOWN (Single Selection)
 SettingsTab:Dropdown({
-    Name = "Aim Target Priority",
-    Flag = "AimPriority",
-    List = {"Nearest Enemy", "Lowest Health", "Highest Level"},
-    Default = "Nearest Enemy",
+    Name = "Visual Theme",
+    Flag = "UITheme",
+    List = {"Dark Mode", "Light Mode", "Accent Red", "Accent Blue"},
+    Default = "Dark Mode",
     Callback = function(SelectedValue)
-        print("Aim priority updated to: " .. SelectedValue)
+        print("Visual theme updated to: " .. SelectedValue)
     end
 })
 
 -- 6. MULTI DROPDOWN (Multiple Selection)
 SettingsTab:MultiDropdown({
-    Name = "Loot ESP Filters",
-    Flag = "ESPFiltres",
-    List = {"Rare Materials", "Epic Weapons", "Quest Items", "Currency Bags"},
+    Name = "ESP Render Settings",
+    Flag = "ESPElements",
+    List = {"Players", "NPCs", "Aimbots", "Chests", "Resources"},
     Callback = function(SelectedStateTable)
-        -- SelectedStateTable is a dictionary: {["Rare Materials"] = true, ["Epic Weapons"] = false, ...}
-        if SelectedStateTable["Epic Weapons"] then
-            print("Rendering Epic Weapons on screen.")
+        -- SelectedStateTable is a dictionary showing which items are ON/OFF
+        if SelectedStateTable["Players"] then
+            print("Player ESP is active.")
         end
     end
 })
 
 -- 7. TEXTBOX (String Input)
 SettingsTab:TextBox({
-    Name = "Custom Server Message",
-    Flag = "CustomMessage",
-    Default = "/say KingGen User here!",
-    Placeholder = "Enter chat message...",
+    Name = "Custom Chat Command",
+    Flag = "ChatCommand",
+    Default = "/e dance",
+    Placeholder = "Enter a command or message...",
     Callback = function(Text)
-        print("Custom message saved: " .. Text)
+        print("New command saved: " .. Text)
     end
 })
 
 -- 8. CYCLE BUTTON (Cycling through a fixed list of options)
 SettingsTab:Cycle({
-    Name = "ESP Line Style",
-    Flag = "ESPStyle",
-    List = {"Box", "Corner", "Tracer"},
-    Default = "Box",
-    Callback = function(NewMode)
-        print("ESP style set to: " .. NewMode)
+    Name = "Aimbot Keybind",
+    Flag = "AimbotKey",
+    List = {"LMB", "RMB", "V", "E", "Q"},
+    Default = "RMB",
+    Callback = function(NewKey)
+        print("Aimbot key set to: " .. NewKey)
     end
 })
 
