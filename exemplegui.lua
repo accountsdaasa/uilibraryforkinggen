@@ -1,126 +1,155 @@
 
+--            URL where you host the corrected KingGen UI library script.
+local Library = loadstring(game:HttpGet('YOUR_FIXED_KINGGEN_UI_SCRIPT_URL_HERE', true))()
 
--- 1. LOAD THE LIBRARY
--- IMPORTANT: Replace the URL below if your base UI script is hosted elsewhere.
-local Library = loadstring(game:HttpGet('https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua', true))()
-
--- --- 2. WINDOW CREATION (The Main UI Container) ---
+-- 1. CREATE THE MAIN WINDOW
 local Window = Library:Window({
-    -- This sets the filename for saving and loading settings (e.g., toggle state, slider value).
-    ConfigName = "my_awesome_script_config.json" 
+    -- File name for automatic saving/loading of toggle states, slider values, etc.
+    ConfigName = "gamename.json"
 })
-
--- --- 3. CREATE TABS (Pages for organizing controls) ---
--- Tabs are automatically placed in order, with 'Settings' and 'Credits' at the end.
-local GameplayTab = Window:Tab("Gameplay Hacks")
-local VisualsTab = Window:Tab("Visual Settings")
 
 -- ===================================================
---             GAMEPLAY HACKS TAB CONTROLS
+-- 2. ADD CUSTOM CONTROLS TO THE 'SETTINGS' PAGE (Optional)
+--    These elements will appear below the default Theme Selector and Keybind field.
+--    We use Window:AddToSettings() to achieve this.
 -- ===================================================
 
--- 4. TOGGLE CONTROL (Our Special 'Reset Player' Loop)
--- Toggles run a function repeatedly (with 'Delay') when ON, and stop when OFF.
-GameplayTab:Toggle({
-    Name = "Reset Player (Loop)", -- Display name on the UI
-    Flag = "ResetPlayerActive",  -- Unique saved setting name (Flag)
-    Default = false,             -- Starts in the OFF state
-    Delay = 0.5,                 -- How often the 'Callback' runs (every 0.5 seconds)
-    
-    Callback = function(IsActive)
-        local LocalPlayer = game.Players.LocalPlayer
-        
-        if IsActive then
-            -- LOGIC WHEN TOGGLE IS ON: Kill the player repeatedly
-            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-                LocalPlayer.Character.Humanoid.Health = 0
-                print("Killing player in loop: " .. tick())
-            end
-        else
-            -- LOGIC WHEN TOGGLE IS OFF: Runs only once to stop the loop
-            print("Reset Player Loop has been stopped.")
-        end
-    end
-})
-
--- 5. SLIDER CONTROL (Numerical Value Adjustment)
-GameplayTab:Slider({
-    Name = "Walkspeed Multiplier",
-    Flag = "SpeedValue",
-    Min = 16,  -- Minimum value the slider can reach
-    Max = 100, -- Maximum value
-    Default = 25,
-    Callback = function(NewValue)
-        local Humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
-        if Humanoid then
-            Humanoid.WalkSpeed = NewValue
-        end
-        print("Walkspeed set to: " .. NewValue)
-    end
-})
-
--- 6. BUTTON CONTROL (One-Time Action)
-GameplayTab:Button({
-    Name = "Give Infinite Cash",
+-- ADD A CUSTOM BUTTON IN SETTINGS
+Window:AddToSettings("Button", {
+    Name = "Wipe Saved Data (Danger!)",
     Callback = function()
-        -- Note: This is an example. Real exploit logic would go here.
-        print("Executing: Giving infinite money! (If the script supports it)")
-    end
-})
-
-
--- ===================================================
---               VISUAL SETTINGS TAB CONTROLS
--- ===================================================
-
--- 7. DROPDOWN (Single Choice Selection)
-VisualsTab:Dropdown({
-    Name = "Chams Color",
-    Flag = "ChamsColor",
-    List = {"Red", "Green", "Blue", "Gold"}, -- List of options to choose from
-    Default = "Red",
-    Callback = function(SelectedValue)
-        print("Chams color selected: " .. SelectedValue)
-    end
-})
-
--- 8. MULTI DROPDOWN (Multiple Independent Choices)
-VisualsTab:MultiDropdown({
-    Name = "ESP Elements to Show",
-    Flag = "ESPElements",
-    List = {"Players", "Weapons", "Health Bars", "Loot Crates"},
-    Callback = function(SelectedStateTable)
-        -- SelectedStateTable is a table like: {["Players"] = true, ["Weapons"] = false, ...}
-        if SelectedStateTable["Loot Crates"] then
-            print("Loot Crates ESP is checked.")
+        print("!! WARNING: Deleting all script saved configurations. !!")
+        -- Logic to clear saved configuration data
+        if isfile and isfile(Library.FolderName .. "/" .. Window.ConfigName) then
+            pcall(function() deletefile(Library.FolderName .. "/" .. Window.ConfigName) end)
+            -- Reload the default configuration after deletion
+            Library:Load() 
         end
     end
 })
 
--- 9. TEXTBOX (Text or String Input)
-VisualsTab:TextBox({
-    Name = "Set Custom Title",
-    Flag = "CustomWindowTitle",
-    Default = "My Hack",
-    Placeholder = "Enter new window title...",
-    Callback = function(Text)
-        print("New title saved: " .. Text)
-        -- In a real UI, you might update the TitleLabel here
+-- ADD A CUSTOM TOGGLE IN SETTINGS
+Window:AddToSettings("Toggle", {
+    Name = "Auto Save Enabled",
+    Flag = "SettingsAutoSave", -- Unique flag for saving state
+    Default = true,
+    Delay = 60, -- Tries to save every 60 seconds
+    Callback = function(IsActive)
+        if IsActive then
+            print("Auto Save: Configuration saved automatically.")
+            Library:Save()
+        else
+            print("Auto Save Loop: Stopped.")
+        end
     end
 })
 
--- 10. CYCLE BUTTON (Simple Toggling through a list)
+
+-- ===================================================
+-- 3. CREATE YOUR OWN CUSTOM PAGES (Tabs)
+-- ===================================================
+
+local CombatTab = Window:Tab("Combat")
+local VisualsTab = Window:Tab("Visuals")
+local UtilityTab = Window:Tab("Utility")
+
+
+-- ===================================================
+-- 4. ADD CONTROLS TO YOUR CUSTOM PAGES
+-- ===================================================
+
+-- --- COMBAT TAB ---
+
+-- TOGGLE (Looping Functionality)
+CombatTab:Toggle({
+    Name = "Auto-Heal (Loop)",
+    Flag = "AutoHealActive",
+    Default = false,
+    Delay = 0.2, -- Checks every 0.2 seconds
+    Callback = function(IsActive)
+        local Humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
+        if IsActive and Humanoid and Humanoid.Health < Humanoid.MaxHealth then
+            Humanoid.Health = Humanoid.Health + 5 -- Small regeneration
+            print("Auto-Healing...")
+        end
+    end
+})
+
+-- SLIDER (Numerical Value Adjustment)
+CombatTab:Slider({
+    Name = "Hitbox Size Multiplier",
+    Flag = "HitboxScale",
+    Min = 1,
+    Max = 5,
+    Default = 2.5,
+    Callback = function(NewValue)
+        print("Hitbox scale set to: " .. NewValue)
+    end
+})
+
+-- DROPDOWN (Single Choice Selection)
+CombatTab:Dropdown({
+    Name = "Target Priority",
+    Flag = "TargetMode",
+    List = {"Closest Player", "Lowest Health", "Oldest Player"},
+    Default = "Closest Player",
+    Callback = function(SelectedValue)
+        print("Target priority changed to: " .. SelectedValue)
+    end
+})
+
+
+-- --- VISUALS TAB ---
+
+-- MULTI DROPDOWN (Multiple Independent Choices)
+VisualsTab:MultiDropdown({
+    Name = "ESP Elements",
+    Flag = "ESPOptions",
+    List = {"Name Tag", "Distance", "Box", "Health Bar"},
+    Callback = function(SelectedStateTable)
+        if SelectedStateTable["Box"] then
+            print("Box ESP is active.")
+        end
+    end
+})
+
+-- CYCLE BUTTON (Cycles through a list of options)
 VisualsTab:Cycle({
-    Name = "FOV Circle Shape",
-    Flag = "FovShape",
-    List = {"Circle", "Square", "Diamond"},
-    Default = "Circle",
-    Callback = function(NewShape)
-        print("FOV shape changed to: " .. NewShape)
+    Name = "Tracer Line Style",
+    Flag = "TracerStyle",
+    List = {"Solid", "Dashed", "Dotted", "Rainbow"},
+    Default = "Solid",
+    Callback = function(NewStyle)
+        print("Tracer style set to: " .. NewStyle)
     end
 })
 
 
--- --- 4. INITIALIZE THE WINDOW ---
--- This must be called at the very end to draw the UI on the screen.
+-- --- UTILITY TAB ---
+
+-- BUTTON (One-Time Action)
+UtilityTab:Button({
+    Name = "Teleport To Safe Zone",
+    Callback = function()
+        local Player = game.Players.LocalPlayer
+        -- Example of coordinates (0, 50, 0)
+        Player.Character:SetPrimaryPartCFrame(CFrame.new(0, 50, 0)) 
+        print("Teleported to 0, 50, 0.")
+    end
+})
+
+-- TEXTBOX (Free Text/String Input)
+UtilityTab:TextBox({
+    Name = "Chat Message Spam",
+    Flag = "SpamText",
+    Default = "Pwned by KingGen!",
+    Placeholder = "Enter message to spam...",
+    Callback = function(Text)
+        print("Spam text saved: " .. Text)
+    end
+})
+
+-- ===================================================
+-- 5. INITIALIZE THE WINDOW (REQUIRED - MUST BE LAST)
+-- ===================================================
 Window:Init()
