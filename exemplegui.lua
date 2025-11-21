@@ -11,8 +11,8 @@ local Window = Library:Window({
 
 -- --- Tab Definitions ---
 
-local MainTab = Window:Tab("Main Features")
-local VisualsTab = Window:Tab("Visuals & Settings")
+local MainTab = Window:Tab("Main")
+local VisualsTab = Window:Tab("Settings")
 
 -- === MAIN FEATURES TAB ===
 
