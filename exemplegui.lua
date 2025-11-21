@@ -1,4 +1,4 @@
--- 1. Load the Library 
+-- 1. Load the Library 
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua"))()
 
 -- 2. Create Window
@@ -33,9 +33,9 @@ local autoQuestToggle = MainTab:Toggle({
     Flag = "AutoQuest",
     Default = false,
     Condition = function()
-        -- Vérifie l'état de l'autre toggle
+        -- Checks the state of the other toggle
         if Library.Flags["AutoFarm"] then
-            return false, "Veuillez désactiver Auto Farm d'abord !"
+            return false, "Please disable Auto Farm first!"
         end
         return true
     end,
@@ -73,7 +73,7 @@ CombatTab:MultiDropdown({
     Flag = "MobMultiSelect",
     List = {"Zombie", "Skeleton", "Boss", "Orc"},
     Callback = function(list)
-        -- Traitement de la liste
+        -- Handle the list here
     end
 })
 
