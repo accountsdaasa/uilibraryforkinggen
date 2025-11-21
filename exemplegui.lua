@@ -1,59 +1,115 @@
--- ================================================================= --
--- STEP 1: LOAD THE KINGGEN UI LIBRARY
--- This line fetches the script from the URL and executes it.
--- It assumes the loaded script makes the 'KingGen' library object
--- available either globally or returns it (often via 'getgenv()').
--- ================================================================= --
-local KingGen = loadstring(game:HttpGet("https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua"))() or getgenv().KingGen
 
--- Check if the library loaded correctly before proceeding
-if not KingGen or type(KingGen) ~= "table" then
-    error("Failed to load or access the KingGen UI Library.")
-end
 
--- ================================================================= --
--- STEP 2: USE THE LOADED LIBRARY TO CREATE THE UI
--- ================================================================= --
+-- 1. LOADING STRING
+local Library = loadstring(game:HttpGet('https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua', true))()
 
--- 1. Create the main window
-local Window = KingGen:Window({
-    Name = "My Custom Script UI",    -- Window Title
-    ConfigName = "CustomScriptConfig.json" -- Name for auto-saving
+-- --- Window Setup ---
+
+local Window = Library:Window({
+    ConfigName = "gamename.json" -- Configuration file for saving settings
 })
 
--- 2. Add a tab
-local MainTab = Window:Tab("Key Features")
+-- --- Tab Definitions ---
 
--- 3. Add a simple Toggle element
+local MainTab = Window:Tab("Main Features")
+local VisualsTab = Window:Tab("Visuals & Settings")
+
+-- === MAIN FEATURES TAB ===
+
+-- 2. TOGGLE (The Persistent Loop Fix)
 MainTab:Toggle({
-    Name = "Activate Speed Boost",
-    Flag = "SpeedBoostActive",
-    Default = false, -- Speed boost is off by default
-    Callback = function(state)
-        if state then
-            print("Speed Boost ACTIVATED")
-            -- Example action: game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50
+    Name = "Auto-Execute Skill",
+    Flag = "SkillActive",
+    Default = false,
+    Delay = 0.2, 
+    
+    Condition = function()
+        -- Must pass a condition (e.g., check for energy/mana)
+        local playerHasEnergy = true -- Assume check here
+        return playerHasEnergy, "Insufficient energy to activate."
+    end,
+    
+    Callback = function(IsActive)
+        if IsActive then
+            -- Logic that runs repeatedly (the core exploit function)
+            -- print("Skill activated. Loop running.")
         else
-            print("Speed Boost DEACTIVATED")
-            -- Example action: game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+            -- Logic for cleanup (runs once when disabled)
+            -- print("Skill deactivated. Loop stopped.")
         end
     end
 })
 
--- 4. Add a Slider
-MainTab:Slider({
-    Name = "Jump Power",
-    Flag = "JumpPowerValue",
-    Min = 50,
-    Max = 200,
-    Default = 50,
-    Callback = function(value)
-        print("Jump Power set to: " .. value)
-        -- Example action: game.Players.LocalPlayer.Character.Humanoid.JumpPower = value
+-- 3. BUTTON (Instant Teleport)
+MainTab:Button({
+    Name = "Instant Server Hop",
+    Callback = function()
+        local TeleportService = game:GetService("TeleportService")
+        TeleportService:Teleport(game.PlaceId)
     end
 })
 
--- 5. Initialize the window to display it
-Window:Init()
+-- 4. SLIDER (Health Adjustment)
+MainTab:Slider({
+    Name = "Set Player Health",
+    Flag = "HealthValue",
+    Min = 0,
+    Max = 1000,
+    Default = 100,
+    Callback = function(Value)
+        local Humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
+        if Humanoid then
+            Humanoid.Health = math.floor(Value)
+        end
+    end
+})
 
-print("KingGen UI successfully loaded and displayed with features.")
+-- === VISUALS & SETTINGS TAB ===
+
+-- 5. DROPDOWN (Single Option Selection)
+VisualsTab:Dropdown({
+    Name = "Aimbot Target Part",
+    Flag = "AimbotPart",
+    List = {"Head", "Torso", "Left Foot"},
+    Default = "Head",
+    Callback = function(SelectedValue)
+        print("Aimbot now targeting: " .. SelectedValue)
+    end
+})
+
+-- 6. MULTI DROPDOWN (Multiple Selections)
+VisualsTab:MultiDropdown({
+    Name = "Loot ESP Types",
+    Flag = "ESPLootFilter",
+    List = {"Epic Chests", "Rare Resources", "NPC Drops", "Currency Bags"},
+    Callback = function(SelectedStateTable)
+        if SelectedStateTable["Epic Chests"] then
+            print("Rendering Epic Chests.")
+        end
+    end
+})
+
+-- 7. TEXTBOX (String Input)
+VisualsTab:TextBox({
+    Name = "Custom Chat Message",
+    Flag = "CustomMessage",
+    Default = "Hello World!",
+    Placeholder = "Enter message to spam...",
+    Callback = function(Text)
+        print("Spam message updated.")
+    end
+})
+
+-- 8. CYCLE BUTTON (Options Cycling)
+VisualsTab:Cycle({
+    Name = "Anti-AFK Mode",
+    Flag = "AntiAFK",
+    List = {"Jump", "Walk", "None"},
+    Default = "Jump",
+    Callback = function(NewMode)
+        print("Anti-AFK mode set to: " .. NewMode)
+    end
+})
+
+-- --- Initialization ---
+Window:Init()
