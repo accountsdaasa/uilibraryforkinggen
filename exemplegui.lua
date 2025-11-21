@@ -1,5 +1,3 @@
-
-
 -- 1. LOADING STRING
 local Library = loadstring(game:HttpGet('https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua', true))()
 
@@ -21,22 +19,15 @@ MainTab:Toggle({
     Name = "Auto-Execute Skill",
     Flag = "SkillActive",
     Default = false,
-    Delay = 0.2, -- Time delay between loop iterations
+    Delay = 0.2,
     
     Condition = function()
-        -- Condition check before activation (e.g., resource check)
-        local playerHasEnergy = true 
-        return playerHasEnergy, "Insufficient energy to activate."
+        ---putscripthere
+        return true, "Insufficient energy to activate."
     end,
     
     Callback = function(IsActive)
-        if IsActive then
-            -- Persistent loop logic goes here
-            -- Example: print("Skill loop running.")
-        else
-            -- Cleanup logic when disabled
-            -- Example: print("Skill loop stopped.")
-        end
+        ---putscripthere
     end
 })
 
@@ -67,56 +58,65 @@ MainTab:Toggle({
 MainTab:Button({
     Name = "Instant Server Hop",
     Callback = function()
-        local TeleportService = game:GetService("TeleportService")
-        TeleportService:Teleport(game.PlaceId)
+        ---putscripthere
     end
 })
 
 -- === VISUALS & SETTINGS TAB ===
 
--- 5. DROPDOWN (Single Option Selection)
+-- 5. SLIDER (Movement Speed)
+VisualsTab:Slider({
+    Name = "Movement Speed Multiplier (WalkSpeed)",
+    Flag = "WalkSpeedMultiplier",
+    Default = 16,
+    Min = 16,
+    Max = 100,
+    
+    Callback = function(NewSpeed)
+        ---putscripthere
+    end
+})
+
+-- 6. DROPDOWN (Single Option Selection)
 VisualsTab:Dropdown({
     Name = "Aimbot Target Part",
     Flag = "AimbotPart",
     List = {"Head", "Torso", "Left Foot"},
     Default = "Head",
     Callback = function(SelectedValue)
-        print("Aimbot now targeting: " .. SelectedValue)
+        ---putscripthere
     end
 })
 
--- 6. MULTI DROPDOWN (Multiple Selections)
+-- 7. MULTI DROPDOWN (Multiple Selections)
 VisualsTab:MultiDropdown({
     Name = "Loot ESP Types",
     Flag = "ESPLootFilter",
     List = {"Epic Chests", "Rare Resources", "NPC Drops", "Currency Bags"},
     Callback = function(SelectedStateTable)
-        -- SelectedStateTable is used to check which items are selected (true/false)
-        if SelectedStateTable["Epic Chests"] then
-            -- Logic to render epic chests
-        end
+        ---putscripthere
     end
 })
 
--- 7. TEXTBOX (String Input)
+-- 8. TEXTBOX (String Input)
 VisualsTab:TextBox({
     Name = "Custom Chat Message",
     Flag = "CustomMessage",
     Default = "Hello World!",
     Placeholder = "Enter message to spam...",
     Callback = function(Text)
-        print("Spam message updated to: " .. Text)
+        ---putscripthere
     end
 })
 
--- 8. CYCLE BUTTON (Options Cycling)
+-- 9. CYCLE BUTTON (Options Cycling)
 VisualsTab:Cycle({
     Name = "Anti-AFK Mode",
     Flag = "AntiAFK",
     List = {"Jump", "Walk", "None"},
     Default = "Jump",
     Callback = function(NewMode)
-        print("Anti-AFK mode set to: " .. NewMode)
+        ---putscripthere
     end
 })
 
