@@ -3,7 +3,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/accou
 
 -- 2. Create Window (Name & Config File)
 local Window = Library:Window({
-    ConfigName = "ExampleConfigV6.json"
+    ConfigName = "putnameofgamehere.json"
 })
 
 if not Window then return end
