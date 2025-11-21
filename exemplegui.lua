@@ -1,6 +1,6 @@
 
---            URL where you host the corrected KingGen UI library script.
-local Library = loadstring(game:HttpGet('YOUR_FIXED_KINGGEN_UI_SCRIPT_URL_HERE', true))()
+--            LOAD.
+local Library = loadstring(game:HttpGet('https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua', true))()
 
 -- 1. CREATE THE MAIN WINDOW
 local Window = Library:Window({
