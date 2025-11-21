@@ -1,91 +1,46 @@
+local Library = loadstring(game:HttpGet("[https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua](https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua)"))()
 
--- 1. Load the Library
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua"))()
-
--- 2. Create Window (ConfigName is vital for saving!)
 local Window = Library:CreateWindow({
-    Title = "King Gen - Blade Zombie",
-    ConfigName = "KingGen_BladeZombie_Config" -- Folder name in workspace
+    Title = "King Gen - Universal Test",
+    ConfigFolder = "KingGen_Test"
 })
 
--- 3. Create Tabs
-local MainTab = Window:AddTab("Main")
-local SettingsTab = Window:AddTab("Settings")
+local Tab1 = Window:AddTab("Farming")
+local Tab2 = Window:AddTab("Settings")
 
--- 4. Toggle Example
-MainTab:AddToggle({
-    Name = "Auto Attack",
-    Flag = "AutoAttack", -- Unique ID for saving
+Tab1:AddToggle({
+    Name = "Enable Auto Farm",
+    Flag = "FarmOn",
     Default = false,
-    Callback = function(Value)
-        print("Auto Attack is:", Value)
-        _G.AutoAttack = Value
-    end
+    Callback = function(v) print("Farm:", v) end
 })
 
--- 5. Slider Example
-MainTab:AddSlider({
-    Name = "WalkSpeed",
-    Flag = "WalkSpeedVal",
-    Min = 16,
-    Max = 200,
-    Default = 16,
-    Callback = function(Value)
-        if game.Players.LocalPlayer.Character then
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
-        end
-    end
-})
-
--- 6. Single Dropdown Example
-MainTab:AddDropdown({
-    Name = "Select Weapon",
-    Flag = "WeaponSelect",
-    List = {"Katana", "Scythe", "Bow"},
-    Multi = false,
-    Default = "Katana",
-    Callback = function(Value)
-        print("Weapon Selected:", Value)
-    end
-})
-
--- 7. Multi Dropdown Example
-MainTab:AddDropdown({
+Tab1:AddDropdown({
     Name = "Select Mobs",
-    Flag = "MobSelect",
-    List = {"Zombie", "Skeleton", "Boss", "Orc"},
+    Flag = "MobList",
+    List = {"Goblin", "Orc", "Dragon"},
     Multi = true,
-    Default = {["Zombie"] = true},
-    Callback = function(Value)
-        -- Value is a table: { ["Zombie"] = true, ["Boss"] = false }
-        for mob, enabled in pairs(Value) do
-            if enabled then print("Farming:", mob) end
-        end
+    Default = {["Goblin"] = true},
+    Callback = function(t) 
+        for k,v in pairs(t) do if v then print(k) end end
     end
 })
 
--- 8. Button Dropdown (Cycle) Example
-SettingsTab:AddButtonDropdown({
-    Name = "Teleport Mode",
-    Flag = "TPMode",
-    List = {"Above", "Behind", "Below"},
-    Default = "Behind",
-    Callback = function(Value)
-        print("TP Mode:", Value)
-    end
+Tab2:AddSlider({
+    Name = "Attack Distance",
+    Flag = "Dist",
+    Min = 5,
+    Max = 50,
+    Default = 10,
+    Callback = function(v) print("Dist:", v) end
 })
 
--- 9. Button Example (No saving needed for buttons)
-SettingsTab:AddButton({
-    Name = "Server Hop",
-    Callback = function()
-        print("Server Hopping...")
-    end
+Tab2:AddButtonDropdown({
+    Name = "Teleport Method",
+    Flag = "TPMethod",
+    List = {"Tween", "CFrame", "Bypass"},
+    Default = "Tween",
+    Callback = function(v) print("TP:", v) end
 })
 
--- Init Notification
-Library:Notify({
-    Title = "Loaded",
-    Text = "KingGen loaded successfully!",
-    Duration = 5
-})
+Library:Notify({Title="King Gen", Text="Loaded Successfully!", Duration=5})
