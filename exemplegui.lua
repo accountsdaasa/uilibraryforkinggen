@@ -1,115 +1,127 @@
--- [[ 1. EXECUTION PROTECTION ]]
-if _G.KingGenExecuted then
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "King Gen",
-        Text = "Script already running!",
-        Duration = 5
-    })
-    return
-end
-_G.KingGenExecuted = true
-
--- [[ 2. LOAD UI LIBRARY ]]
+-- Charger la Library (Mets ton lien RAW ici)
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua"))()
 
--- [[ 3. GLOBAL LOGIC / BACKEND ]]
-local logic = {
-    main = {
-        autoFarm = false,
-        autoCollect = false,
-        speed = 16,
-    },
-    settings = {
-        targetMob = "Zombie",
-        teleportMode = "CFrame",
-    }
-}
-
--- [[ LOOP EXAMPLE (Runs the script logic based on 'logic' table) ]]
-task.spawn(function()
-    local lp = game.Players.LocalPlayer
-    
-    while task.wait(0.1) do
-        -- WalkSpeed Logic
-        if lp.Character and lp.Character:FindFirstChild("Humanoid") then
-            lp.Character.Humanoid.WalkSpeed = logic.main.speed
-        end
-
-        -- Auto Farm Logic
-        if logic.main.autoFarm then
-            -- --- PUT YOUR CONTINUOUS FARMING SCRIPT HERE ---
-            print("Auto Farming active! Target:", logic.settings.targetMob, "using TP mode:", logic.settings.teleportMode)
-            task.wait(1)
-            -- ---------------------------------------------
-        end
-    end
-end)
-
-
--- [[ 4. CREATE WINDOW AND TABS ]]
-local Window = Library:CreateWindow({
-    -- Le titre est désormais fixé à "King Gen" dans baseui.lua
-    ConfigFolder = "KingGen_GenericScript"
+-- Création de la Fenêtre avec nom de fichier de sauvegarde spécifique
+local Window = Library:Window({
+    ConfigName = "weaklegacy.json" -- Changement du nom du fichier de sauvegarde ici
+    -- Note: Le Titre visuel sera toujours "King Gen"
 })
 
-local MainTab = Window:AddTab("Main")
-local PlayerTab = Window:AddTab("Player")
-local SettingsTab = Window:AddTab("Settings")
+if not Window then return end -- Arrête si déjà lancé
 
+-- Création des Onglets
+local MainTab = Window:Tab("Main")
+local MiscTab = Window:Tab("Misc")
+local RollTab = Window:Tab("Roll")
+local MissionsTab = Window:Tab("Missions")
+local SettingsTab = Window:Tab("Settings")
 
--- [[ 5. ADD UI ELEMENTS ]]
-
--- TAB 1: Main
-MainTab:AddToggle({
-    Name = "Auto Farm",
-    Flag = "Toggle_Farm",
+-- === Onglet Main (Comme sur l'image) ===
+MainTab:Toggle({
+    Name = "Auto Quest",
+    Flag = "AutoQuest",
     Default = false,
-    Callback = function(Value)
-        logic.main.autoFarm = Value
-        -- --- PUT SCRIPT HERE: Initialisation/Désinitialisation de l'Auto Farm ---
-        print("Auto Farm set to:", Value)
-        -- ---------------------------------------------------------------------
+    Callback = function(value)
+        -- ---put script here (Auto Quest Logic)
+        print("Auto Quest is:", value)
     end
 })
 
--- TAB 2: Player
-PlayerTab:AddSlider({
+MainTab:Toggle({
+    Name = "Auto Mob",
+    Flag = "AutoMob",
+    Default = false,
+    Callback = function(value)
+        -- ---put script here (Auto Mob Logic)
+    end
+})
+
+MainTab:Toggle({
+    Name = "Auto Raid",
+    Flag = "AutoRaid",
+    Default = true, -- ON par défaut comme sur l'image pour tester
+    Callback = function(value)
+        -- ---put script here (Auto Raid Logic)
+    end
+})
+
+MainTab:Toggle({
+    Name = "Auto Boss",
+    Flag = "AutoBoss",
+    Default = false,
+    Callback = function(value)
+        -- ---put script here (Auto Boss Logic)
+    end
+})
+
+MainTab:Toggle({
+    Name = "Both Mode",
+    Flag = "BothMode",
+    Default = false,
+    Callback = function(value)
+        -- ---put script here (Both Mode Logic)
+    end
+})
+
+-- === Exemples d'autres éléments ===
+
+-- Dropdown Button (Cycle)
+SettingsTab:Cycle({
+    Name = "Choose Raid",
+    Flag = "RaidSelect",
+    List = {"Tanjiro Raid", "Mugen Train", "Dungeon"},
+    Default = "Tanjiro Raid",
+    Callback = function(value)
+        -- ---put script here
+        print("Raid Selected:", value)
+    end
+})
+
+-- Dropdown Normal
+SettingsTab:Dropdown({
+    Name = "Weapon Select",
+    Flag = "WeaponSel",
+    List = {"Katana", "Scythe", "Dual Blades"},
+    Callback = function(val)
+        -- ---put script here
+    end
+})
+
+-- Multi Dropdown
+SettingsTab:MultiDropdown({
+    Name = "Select Bosses",
+    Flag = "BossSelect",
+    List = {"Akaza", "Rengoku", "Tanjiro"},
+    Callback = function(selected)
+        -- ---put script here
+        for boss, active in pairs(selected) do
+            if active then print(boss .. " active") end
+        end
+    end
+})
+
+-- Slider
+SettingsTab:Slider({
     Name = "WalkSpeed",
-    Flag = "Slider_WS",
+    Flag = "WS",
     Min = 16,
     Max = 200,
     Default = 16,
-    Callback = function(Value)
-        logic.main.speed = Value
+    Callback = function(val)
+        -- ---put script here
+        if game.Players.LocalPlayer.Character then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = val
+        end
     end
 })
 
-
--- TAB 3: Settings
-SettingsTab:AddDropdown({
-    Name = "Select Mob Target",
-    Flag = "Drop_Mob",
-    List = {"Zombie", "Skeleton", "Golem", "Boss"},
-    Multi = false,
-    Default = "Zombie",
-    Callback = function(Value)
-        logic.settings.targetMob = Value
+-- Bouton Simple
+SettingsTab:Button({
+    Name = "Server Hop",
+    Callback = function()
+        -- ---put script here
     end
 })
 
-SettingsTab:AddButtonDropdown({
-    Name = "Teleport Mode",
-    Flag = "Cycle_TP",
-    List = {"CFrame", "Tween", "Bypass"},
-    Default = "CFrame",
-    Callback = function(Value)
-        logic.settings.teleportMode = Value
-    end
-})
-
--- [[ 6. NOTIFICATION ]]
-Library:Notify({
-    Title = "King Gen",
-    Text = "Script Loaded (Template)",
-    Duration = 5
-})
+-- Initialiser les Crédits à la fin (Obligatoire)
+Window:Init()
