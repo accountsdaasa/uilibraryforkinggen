@@ -1,155 +1,59 @@
+-- ================================================================= --
+-- STEP 1: LOAD THE KINGGEN UI LIBRARY
+-- This line fetches the script from the URL and executes it.
+-- It assumes the loaded script makes the 'KingGen' library object
+-- available either globally or returns it (often via 'getgenv()').
+-- ================================================================= --
+local KingGen = loadstring(game:HttpGet("https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua"))() or getgenv().KingGen
 
---            LOAD.
-local Library = loadstring(game:HttpGet('https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua', true))()
+-- Check if the library loaded correctly before proceeding
+if not KingGen or type(KingGen) ~= "table" then
+    error("Failed to load or access the KingGen UI Library.")
+end
 
--- 1. CREATE THE MAIN WINDOW
-local Window = Library:Window({
-    -- File name for automatic saving/loading of toggle states, slider values, etc.
-    ConfigName = "gamename.json"
+-- ================================================================= --
+-- STEP 2: USE THE LOADED LIBRARY TO CREATE THE UI
+-- ================================================================= --
+
+-- 1. Create the main window
+local Window = KingGen:Window({
+    Name = "My Custom Script UI",    -- Window Title
+    ConfigName = "CustomScriptConfig.json" -- Name for auto-saving
 })
 
--- ===================================================
--- 2. ADD CUSTOM CONTROLS TO THE 'SETTINGS' PAGE (Optional)
---    These elements will appear below the default Theme Selector and Keybind field.
---    We use Window:AddToSettings() to achieve this.
--- ===================================================
+-- 2. Add a tab
+local MainTab = Window:Tab("Key Features")
 
--- ADD A CUSTOM BUTTON IN SETTINGS
-Window:AddToSettings("Button", {
-    Name = "Wipe Saved Data (Danger!)",
-    Callback = function()
-        print("!! WARNING: Deleting all script saved configurations. !!")
-        -- Logic to clear saved configuration data
-        if isfile and isfile(Library.FolderName .. "/" .. Window.ConfigName) then
-            pcall(function() deletefile(Library.FolderName .. "/" .. Window.ConfigName) end)
-            -- Reload the default configuration after deletion
-            Library:Load() 
-        end
-    end
-})
-
--- ADD A CUSTOM TOGGLE IN SETTINGS
-Window:AddToSettings("Toggle", {
-    Name = "Auto Save Enabled",
-    Flag = "SettingsAutoSave", -- Unique flag for saving state
-    Default = true,
-    Delay = 60, -- Tries to save every 60 seconds
-    Callback = function(IsActive)
-        if IsActive then
-            print("Auto Save: Configuration saved automatically.")
-            Library:Save()
+-- 3. Add a simple Toggle element
+MainTab:Toggle({
+    Name = "Activate Speed Boost",
+    Flag = "SpeedBoostActive",
+    Default = false, -- Speed boost is off by default
+    Callback = function(state)
+        if state then
+            print("Speed Boost ACTIVATED")
+            -- Example action: game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50
         else
-            print("Auto Save Loop: Stopped.")
+            print("Speed Boost DEACTIVATED")
+            -- Example action: game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
         end
     end
 })
 
-
--- ===================================================
--- 3. CREATE YOUR OWN CUSTOM PAGES (Tabs)
--- ===================================================
-
-local CombatTab = Window:Tab("Combat")
-local VisualsTab = Window:Tab("Visuals")
-local UtilityTab = Window:Tab("Utility")
-
-
--- ===================================================
--- 4. ADD CONTROLS TO YOUR CUSTOM PAGES
--- ===================================================
-
--- --- COMBAT TAB ---
-
--- TOGGLE (Looping Functionality)
-CombatTab:Toggle({
-    Name = "Auto-Heal (Loop)",
-    Flag = "AutoHealActive",
-    Default = false,
-    Delay = 0.2, -- Checks every 0.2 seconds
-    Callback = function(IsActive)
-        local Humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
-        if IsActive and Humanoid and Humanoid.Health < Humanoid.MaxHealth then
-            Humanoid.Health = Humanoid.Health + 5 -- Small regeneration
-            print("Auto-Healing...")
-        end
+-- 4. Add a Slider
+MainTab:Slider({
+    Name = "Jump Power",
+    Flag = "JumpPowerValue",
+    Min = 50,
+    Max = 200,
+    Default = 50,
+    Callback = function(value)
+        print("Jump Power set to: " .. value)
+        -- Example action: game.Players.LocalPlayer.Character.Humanoid.JumpPower = value
     end
 })
 
--- SLIDER (Numerical Value Adjustment)
-CombatTab:Slider({
-    Name = "Hitbox Size Multiplier",
-    Flag = "HitboxScale",
-    Min = 1,
-    Max = 5,
-    Default = 2.5,
-    Callback = function(NewValue)
-        print("Hitbox scale set to: " .. NewValue)
-    end
-})
-
--- DROPDOWN (Single Choice Selection)
-CombatTab:Dropdown({
-    Name = "Target Priority",
-    Flag = "TargetMode",
-    List = {"Closest Player", "Lowest Health", "Oldest Player"},
-    Default = "Closest Player",
-    Callback = function(SelectedValue)
-        print("Target priority changed to: " .. SelectedValue)
-    end
-})
-
-
--- --- VISUALS TAB ---
-
--- MULTI DROPDOWN (Multiple Independent Choices)
-VisualsTab:MultiDropdown({
-    Name = "ESP Elements",
-    Flag = "ESPOptions",
-    List = {"Name Tag", "Distance", "Box", "Health Bar"},
-    Callback = function(SelectedStateTable)
-        if SelectedStateTable["Box"] then
-            print("Box ESP is active.")
-        end
-    end
-})
-
--- CYCLE BUTTON (Cycles through a list of options)
-VisualsTab:Cycle({
-    Name = "Tracer Line Style",
-    Flag = "TracerStyle",
-    List = {"Solid", "Dashed", "Dotted", "Rainbow"},
-    Default = "Solid",
-    Callback = function(NewStyle)
-        print("Tracer style set to: " .. NewStyle)
-    end
-})
-
-
--- --- UTILITY TAB ---
-
--- BUTTON (One-Time Action)
-UtilityTab:Button({
-    Name = "Teleport To Safe Zone",
-    Callback = function()
-        local Player = game.Players.LocalPlayer
-        -- Example of coordinates (0, 50, 0)
-        Player.Character:SetPrimaryPartCFrame(CFrame.new(0, 50, 0)) 
-        print("Teleported to 0, 50, 0.")
-    end
-})
-
--- TEXTBOX (Free Text/String Input)
-UtilityTab:TextBox({
-    Name = "Chat Message Spam",
-    Flag = "SpamText",
-    Default = "Pwned by KingGen!",
-    Placeholder = "Enter message to spam...",
-    Callback = function(Text)
-        print("Spam text saved: " .. Text)
-    end
-})
-
--- ===================================================
--- 5. INITIALIZE THE WINDOW (REQUIRED - MUST BE LAST)
--- ===================================================
+-- 5. Initialize the window to display it
 Window:Init()
+
+print("KingGen UI successfully loaded and displayed with features.")
