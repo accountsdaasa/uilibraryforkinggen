@@ -1,136 +1,99 @@
--- 1. Load the Library
--- Replace the URL below with your RAW GitHub URL for baseui.lua
+-- 1. Load the V6 Library
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua"))()
 
--- 2. Create the Window
+-- 2. Create Window (Name & Config File)
 local Window = Library:Window({
-    ConfigName = "WeakLegacyConfig.json" -- Custom save file name
+    ConfigName = "ExampleConfigV6.json"
 })
 
-if not Window then return end -- Stop if script is already running
+if not Window then return end
 
 -- 3. Create Tabs
 local MainTab = Window:Tab("Main")
-local MiscTab = Window:Tab("Misc")
-local RollTab = Window:Tab("Roll")
-local MissionsTab = Window:Tab("Missions")
+local CombatTab = Window:Tab("Combat")
 local SettingsTab = Window:Tab("Settings")
 
--- === Main Tab Examples (Compact Toggles like Image 1) ===
+-- =========================================
+-- [MAIN TAB] - Toggles
+-- =========================================
 
 MainTab:Toggle({
-    Name = "Auto Quest",
-    Flag = "AutoQuest", -- Save key
+    Name = "Auto Farm",
+    Flag = "AutoFarmKey", -- Flag for saving
     Default = false,
     Callback = function(value)
-        -- ---put script here
-        print("Auto Quest is:", value)
-        _G.AutoQuest = value
-        while _G.AutoQuest do
-            -- Auto Quest Logic
-            task.wait(1)
-        end
+        -- ---script here
+        print("Auto Farm:", value)
     end
 })
 
 MainTab:Toggle({
-    Name = "Auto Mob",
-    Flag = "AutoMob",
+    Name = "Auto Collect",
+    Flag = "AutoCollectKey",
     Default = false,
     Callback = function(value)
-        -- ---put script here
+        -- ---script here
     end
 })
 
-MainTab:Toggle({
-    Name = "Auto Raid",
-    Flag = "AutoRaid",
-    Default = true,
-    Callback = function(value)
-        -- ---put script here
-    end
-})
+-- =========================================
+-- [COMBAT TAB] - Sliders & Buttons
+-- =========================================
 
-MainTab:Toggle({
-    Name = "Auto Boss",
-    Flag = "AutoBoss",
-    Default = false,
-    Callback = function(value)
-        -- ---put script here
-    end
-})
-
-MainTab:Toggle({
-    Name = "Both Mode",
-    Flag = "BothMode",
-    Default = false,
-    Callback = function(value)
-        -- ---put script here
-    end
-})
-
--- === Settings Tab Examples (Stacked Elements like Image 2) ===
-
--- Cycle Button (For choosing modes/raids)
-SettingsTab:Cycle({
-    Name = "Choose Raid",
-    Flag = "RaidSelection",
-    List = {"Dungeon", "Tanjiro Raid", "Mugen Train"},
-    Default = "Dungeon",
-    Callback = function(value)
-        -- ---put script here
-        print("Raid set to:", value)
-    end
-})
-
--- Standard Dropdown (Single Select)
-SettingsTab:Dropdown({
-    Name = "Weapon Select",
-    Flag = "WeaponSelection",
-    List = {"Katana", "Scythe", "Dual Blades", "Greatsword"},
-    Default = "Katana",
-    Callback = function(value)
-        -- ---put script here
-        print("Weapon equipped:", value)
-    end
-})
-
--- Multi Dropdown (Select Multiple Items)
-SettingsTab:MultiDropdown({
-    Name = "Select Bosses",
-    Flag = "BossSelection",
-    List = {"Akaza", "Rengoku", "Nezuko", "Tanjiro"},
-    Callback = function(selectedList)
-        -- ---put script here
-        for boss, active in pairs(selectedList) do
-            if active then
-                print("Hunting boss:", boss)
-            end
-        end
-    end
-})
-
--- Slider (WalkSpeed)
-SettingsTab:Slider({
-    Name = "WalkSpeed",
-    Flag = "WalkSpeedVal",
+CombatTab:Slider({
+    Name = "Walk Speed",
+    Flag = "WalkSpeedKey",
     Min = 16,
     Max = 200,
     Default = 16,
     Callback = function(value)
-        if game.Players.LocalPlayer.Character then
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
-        end
+        -- ---script here
+        print("Speed:", value)
     end
 })
 
--- Standard Button
-SettingsTab:Button({
-    Name = "Server Hop",
+CombatTab:Button({
+    Name = "Kill All Mobs",
     Callback = function()
-        -- ---put script here
+        -- ---script here
+        print("Killed all mobs")
     end
 })
 
--- 4. Initialize Credits (Must be called last)
+-- =========================================
+-- [SETTINGS TAB] - Dropdowns & Cycles
+-- =========================================
+
+SettingsTab:Dropdown({
+    Name = "Select Weapon",
+    Flag = "WeaponSelect",
+    List = {"Katana", "Scythe", "Bow", "Fists"},
+    Default = "Katana",
+    Callback = function(item)
+        -- ---script here
+        print("Selected:", item)
+    end
+})
+
+SettingsTab:Cycle({
+    Name = "Teleport Mode",
+    Flag = "TPMode",
+    List = {"Above", "Below", "Behind"},
+    Default = "Behind",
+    Callback = function(mode)
+        -- ---script here
+        print("TP Mode:", mode)
+    end
+})
+
+SettingsTab:MultiDropdown({
+    Name = "Target Mobs",
+    Flag = "TargetMobList",
+    List = {"Zombie", "Skeleton", "Boss"},
+    Callback = function(list)
+        -- ---script here
+    end
+})
+
+-- 4. Initialize (Credits Page)
 Window:Init()
