@@ -1,154 +1,148 @@
 
 
--- 1. Load the Library
-local Library = loadstring(readfile("library.lua"))()
+-- 1. LOADING STRING
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua"))()
 
--- 2. Create the Window (Loads config automatically)
-local Window = Library:Window({
-    ConfigName = "EnglishConfig.json" -- Settings will be saved here
-})
-
--- 3. Create Tabs
-local MainTab = Window:Tab("Auto Farm")
-local CombatTab = Window:Tab("Combat")
-local MiscTab = Window:Tab("Misc")
-
--- ================================================================= --
--- TAB 1: MAIN (Testing Auto-Execute Loop)
--- ================================================================= --
-
--- TOGGLE: Auto Farm
--- logic: If you leave this ON and execute the script again, the loop restarts automatically.
-MainTab:Toggle({
-    Name = "Auto Farm Level",
-    Flag = "AutoFarmFlag", -- Unique ID for saving
-    Default = false,
-    Delay = 1, -- How often the loop runs (in seconds)
-    Callback = function(enabled)
-        if enabled then
-            -- This code runs repeatedly while ON
-            print("[Loop] Farming mobs... (+XP)")
-            
-            -- Example: game.ReplicatedStorage.Attack:FireServer()
-        else
-            -- This runs once when turned OFF
-            print("[Loop] Farming stopped.")
-        end
-    end
-})
-
--- TOGGLE: Auto Collect
-MainTab:Toggle({
-    Name = "Auto Collect Drops",
-    Flag = "AutoCollectFlag",
-    Default = true,
-    Delay = 0.5,
-    Callback = function(enabled)
-        if enabled then
-            print("[Loop] Collecting items...")
-        end
-    end
-})
-
-MainTab:Button({
-    Name = "Redeem Daily Codes",
-    Callback = function()
-        print("Codes redeemed!")
-    end
-})
-
--- ================================================================= --
--- TAB 2: COMBAT (Testing Scrollable Dropdowns)
--- ================================================================= --
-
--- GENERATE A LONG LIST TO TEST SCROLLING
-local WeaponList = {}
-for i = 1, 50 do
-    table.insert(WeaponList, "Epic Sword Level " .. i)
+if not Library then
+    warn("Critical Error: Library failed to load.")
+    return
 end
 
--- DROPDOWN (SINGLE): Scrollable
--- Open this to see the scrollbar appear because the list is long.
-CombatTab:Dropdown({
-    Name = "Select Weapon (Scroll Test)",
-    Flag = "WeaponSelector",
-    List = WeaponList, -- List of 50 items
-    Default = "Epic Sword Level 1",
-    Multi = false,
-    Callback = function(selectedItem)
-        print("Equipped: " .. selectedItem)
-    end
+-- 2. WINDOW SETUP
+local Window = Library:Window({
+    ConfigName = "KingGenConfig.json"
 })
 
--- SLIDER: WalkSpeed
-CombatTab:Slider({
-    Name = "WalkSpeed",
-    Flag = "WalkSpeedVal",
-    Min = 16,
-    Max = 250,
-    Default = 16,
-    Callback = function(value)
-        if game.Players.LocalPlayer.Character then
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
-        end
-    end
-})
+-- 3. TABS
+local MainTab = Window:Tab("Main")
+local VisualsTab = Window:Tab("Visuals")
+local SettingsTab = Window:Tab("Settings")
 
 -- ================================================================= --
--- TAB 3: MISC (Multi-Dropdown & Inputs)
+-- MAIN TAB
 -- ================================================================= --
 
--- MULTI DROPDOWN: ESP Settings
--- Select multiple options. The scrollbar works here too if the list is long.
-CombatTab:MultiDropdown({
-    Name = "ESP Configuration",
-    Flag = "ESP_Settings",
-    List = {"Players", "Chests", "Ores", "Enemies", "NPCs", "Mythical Items", "Bosses"},
-    Callback = function(selectedList)
-        -- selectedList looks like: { ["Players"] = true, ["Chests"] = false }
-        for name, state in pairs(selectedList) do
-            if state then
-                print("ESP Enabled for: " .. name)
+-- TOGGLE: Auto Farm (Loop)
+MainTab:Toggle({
+    Name = "Auto Farm (Loop)",
+    Flag = "AutoFarm",
+    Default = false,
+    Delay = 0.2,
+    
+    Condition = function()
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            if player.Character.Humanoid.Health <= 0 then
+                return false, "Player is dead"
             end
         end
-    end
-})
-
--- CYCLE BUTTON
-MiscTab:Cycle({
-    Name = "Lighting Mode",
-    Flag = "LightingMode",
-    List = {"Day", "Night", "Sunset", "Void"},
-    Default = "Day",
-    Callback = function(mode)
-        print("Lighting changed to: " .. mode)
-        local L = game:GetService("Lighting")
-        if mode == "Day" then L.ClockTime = 14
-        elseif mode == "Night" then L.ClockTime = 0
-        elseif mode == "Sunset" then L.ClockTime = 18
-        elseif mode == "Void" then L.ClockTime = 0; L.Brightness = 0
+        return true
+    end,
+    
+    Callback = function(Value)
+        if Value then
+            -- Add your auto-farm code here
+        else
+            -- Code to stop farming (optional)
         end
     end
 })
 
--- TEXTBOX
-MiscTab:TextBox({
-    Name = "Webhook URL",
-    Flag = "WebhookLink",
-    Default = "",
-    Placeholder = "Paste your link here...",
-    Callback = function(text)
-        print("Webhook Saved: " .. text)
+-- TOGGLE: Instant Kill
+MainTab:Toggle({
+    Name = "Instant Kill",
+    Flag = "InstaKill",
+    Default = false,
+    Callback = function(Value)
+        -- Add instant kill logic here
     end
 })
 
--- BUTTON: Unload
-MiscTab:Button({
-    Name = "Unload UI",
+-- BUTTON: Server Hop
+MainTab:Button({
+    Name = "Server Hop",
     Callback = function()
-        game:GetService("CoreGui").KingGenUI:Destroy()
+        -- Add server hop logic here
     end
 })
 
--- Initialize the Credits Tab
+-- ================================================================= --
+-- VISUALS TAB
+-- ================================================================= --
+
+-- SLIDER: WalkSpeed
+VisualsTab:Slider({
+    Name = "Walk Speed",
+    Flag = "WalkSpeed",
+    Default = 16,
+    Min = 16,
+    Max = 250,
+    Callback = function(Value)
+        pcall(function()
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+        end)
+    end
+})
+
+-- DROPDOWN: Scroll Test
+local Weapons = {
+    "Starter Sword", "Iron Blade", "Steel Katana", "Golden Saber",
+    "Diamond Claymore", "Obsidian Dagger", "Emerald Spear", "Ruby Scythe",
+    "Void Staff", "Solar Bow", "Lunar Shield", "Galaxy Hammer",
+    "Infinity Gauntlet", "Admin Gun", "Developer Tool"
+}
+
+VisualsTab:Dropdown({
+    Name = "Select Weapon",
+    Flag = "WeaponSelector",
+    List = Weapons,
+    Default = "Starter Sword",
+    Callback = function(Selected)
+        -- Add weapon equip logic here
+    end
+})
+
+-- MULTI-DROPDOWN: ESP Filters
+local EspItems = {
+    "Players", "Chests", "Enemies", "Allies",
+    "Rare Items", "Quest Givers", "Vehicles", "Traps",
+    "Safe Zones", "Bosses", "Legendary Loot"
+}
+
+VisualsTab:MultiDropdown({
+    Name = "ESP Filter",
+    Flag = "EspFilter",
+    List = EspItems,
+    Callback = function(SelectedTable)
+        -- Add ESP filter logic here
+    end
+})
+
+-- ================================================================= --
+-- SETTINGS TAB
+-- ================================================================= --
+
+-- TEXTBOX: Chat Spam
+SettingsTab:TextBox({
+    Name = "Chat Spam Message",
+    Flag = "SpamText",
+    Default = "King Gen OP!",
+    Placeholder = "Type message...",
+    Callback = function(Text)
+        -- Add chat spam logic here
+    end
+})
+
+-- CYCLE: Anti-AFK Mode
+SettingsTab:Cycle({
+    Name = "Anti-AFK Action",
+    Flag = "AfkAction",
+    List = {"Jump", "Walk", "Spin", "Emote"},
+    Default = "Jump",
+    Callback = function(Mode)
+        -- Add Anti-AFK logic here
+    end
+})
+
+-- 4. INITIALIZATION
 Window:Init()
