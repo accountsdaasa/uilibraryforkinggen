@@ -4,7 +4,6 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/accountsdaasa/uilibraryforkinggen/refs/heads/main/baseui.lua"))()
 
 if not Library then
-    warn("Critical Error: Library failed to load.")
     return
 end
 
