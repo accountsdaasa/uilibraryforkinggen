@@ -10,7 +10,7 @@ end
 
 -- 2. WINDOW SETUP
 local Window = Library:Window({
-    ConfigName = "KingGenConfig.json"
+    ConfigName = "putthenameofthegamehere.json"
 })
 
 -- 3. TABS
