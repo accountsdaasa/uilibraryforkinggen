@@ -361,6 +361,7 @@ Library.Window = function(self, options)
 		Page.AutomaticCanvasSize = Enum.AutomaticSize.Y;
 		Page.CanvasSize = UDim2.new(0, 0, 0, 0);
 		Page.ZIndex = 2;
+		Page.Active = true;
 		local PageLayout = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\215\11\203\85\104\101\234\227\59\232\73\111", "\166\130\66\135\60\27\17"), Page);
 		PageLayout.SortOrder = Enum.SortOrder.LayoutOrder;
 		PageLayout.Padding = UDim.new(0, 10);
@@ -774,6 +775,15 @@ Library.Window = function(self, options)
 			end
 			local Open = false;
 			local BlockerConnection;
+			local function UpdateText()
+				local count = 0;
+				for _, state in pairs(Library.Flags[dFlag]) do
+					if state then
+						count = count + 1;
+					end
+				end
+				MainBtn.Text = ((count > 0) and (count .. LUAOBFUSACTOR_DECRYPT_STR_0("\67\245\114\64\6\197\99\73\7", "\44\99\166\23"))) or LUAOBFUSACTOR_DECRYPT_STR_0("\79\242\37\51\48\176\60\222\61\51\62\183\50\185\103", "\196\28\151\73\86\83");
+			end
 			local function CloseDropdown()
 				Open = false;
 				Scroll.Visible = false;
@@ -803,15 +813,6 @@ Library.Window = function(self, options)
 					CloseDropdown();
 				end
 			end);
-			local function UpdateText()
-				local count = 0;
-				for _, v in pairs(Library.Flags[dFlag]) do
-					if v then
-						count = count + 1;
-					end
-				end
-				MainBtn.Text = ((count > 0) and (count .. LUAOBFUSACTOR_DECRYPT_STR_0("\67\245\114\64\6\197\99\73\7", "\44\99\166\23"))) or LUAOBFUSACTOR_DECRYPT_STR_0("\79\242\37\51\48\176\60\222\61\51\62\183\50\185\103", "\196\28\151\73\86\83");
-			end
 			for _, item in ipairs(options.List) do
 				if (Library.Flags[dFlag][item] == nil) then
 					Library.Flags[dFlag][item] = false;
@@ -900,11 +901,11 @@ Library.Window = function(self, options)
 			local Input = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\230\128\196\55\165\166\76", "\52\178\229\188\67\231\201"), Frame);
 			Input.Size = UDim2.new(1, -20, 0, 35);
 			Input.Position = UDim2.new(0, 10, 0, 30);
-			Input.BackgroundColor3 = Theme.ItemBG;
+			Input.PlaceholderText = options.Placeholder or LUAOBFUSACTOR_DECRYPT_STR_0("\4\79\68\1\229\28\55\36\89\68\68\255\89\49\36\15\30\74", "\67\65\33\48\100\151\60");
 			Input.Text = default;
-			Input.PlaceholderText = options.Placeholder or LUAOBFUSACTOR_DECRYPT_STR_0("\21\88\64\1\183\84\38\51\68\30\74\185", "\67\65\33\48\100\151\60");
-			Input.TextColor3 = Theme.AccentStart;
-			Input.Font = Enum.Font.GothamSemibold;
+			Input.BackgroundColor3 = Theme.ItemBG;
+			Input.TextColor3 = Theme.Text;
+			Input.Font = Enum.Font.Gotham;
 			Input.TextScaled = true;
 			Input.ZIndex = 5;
 			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\234\206\141\215\225\209\226\188", "\147\191\135\206\184"), Input).CornerRadius = UDim.new(0, 8);
@@ -958,78 +959,72 @@ Library.Window = function(self, options)
 		end;
 		Elements.LinkBox = function(self, options)
 			local Frame = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\112\189\61\19\22", "\147\54\207\92\126\115\131"), Page);
-			Frame.Size = UDim2.new(1, 0, 0, 125);
+			Frame.Size = UDim2.new(1, 0, 0, 50);
 			Frame.BackgroundTransparency = 1;
 			Frame.ZIndex = 5;
-			local Label = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\57\52\45\105\33\127\15\52\57", "\30\109\81\85\29\109"), Frame);
-			Label.Text = options.Name;
-			Label.Size = UDim2.new(1, 0, 0, 24);
-			Label.Position = UDim2.new(0, 0, 0, 0);
+			local Box = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\57\52\45\105\47\113\21", "\30\109\81\85\29\109"), Frame);
+			Box.Size = UDim2.new(1, -110, 0, 35);
+			Box.Position = UDim2.new(0, 0, 0, 10);
+			Box.PlaceholderText = options.Link or "";
+			Box.Text = options.Link or "";
+			Box.BackgroundColor3 = Theme.ItemBG;
+			Box.TextColor3 = Theme.Text;
+			Box.Font = Enum.Font.Gotham;
+			Box.TextScaled = true;
+			Box.ZIndex = 5;
+			Box.ClearTextOnFocus = false;
+			Box.TextEditable = false;
+			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\202\88\119\185\36\208\249\237", "\156\159\17\52\214\86\190"), Box).CornerRadius = UDim.new(0, 8);
+			local Label = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\154\234\165\168\130\238\191\185\162", "\220\206\143\221"), Frame);
+			Label.Text = options.Name or LUAOBFUSACTOR_DECRYPT_STR_0("\170\116\35\28", "\178\230\29\77\119\184\172");
+			Label.Size = UDim2.new(1, 0, 0, 20);
+			Label.Position = UDim2.new(0, 0, 0, -10);
 			Label.Font = Enum.Font.GothamBold;
 			Label.TextScaled = true;
 			Label.TextColor3 = Theme.Text;
 			Label.BackgroundTransparency = 1;
 			Label.TextXAlignment = Enum.TextXAlignment.Left;
 			Label.ZIndex = 5;
-			local Box = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\203\116\76\162\26\223\254\250\125", "\156\159\17\52\214\86\190"), Frame);
-			Box.Text = options.Link or LUAOBFUSACTOR_DECRYPT_STR_0("\130\224\188\184\167\225\186\242\224\161", "\220\206\143\221");
-			Box.Size = UDim2.new(1, 0, 0, 35);
-			Box.Position = UDim2.new(0, 0, 0, 30);
-			Box.BackgroundColor3 = Theme.ItemBG;
-			Box.TextColor3 = Theme.TextDark;
-			Box.Font = Enum.Font.Gotham;
-			Box.TextScaled = true;
-			Box.TextWrapped = true;
-			Box.ZIndex = 5;
-			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\179\84\14\24\202\194\215\148", "\178\230\29\77\119\184\172"), Box).CornerRadius = UDim.new(0, 8);
-			local BtnContainer = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\211\172\11\22\114", "\152\149\222\106\123\23"), Frame);
-			BtnContainer.Size = UDim2.new(1, 0, 0, 50);
-			BtnContainer.Position = UDim2.new(0, 0, 0, 75);
-			BtnContainer.BackgroundTransparency = 1;
-			BtnContainer.LayoutOrder = 3;
-			BtnContainer.ZIndex = 5;
-			local CopyBtn = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\233\35\238\87\151\200\50\226\76\187", "\213\189\70\150\35"), BtnContainer);
-			CopyBtn.Text = LUAOBFUSACTOR_DECRYPT_STR_0("\108\90\100\17\15\121\125\6\68", "\104\47\53\20");
-			CopyBtn.Size = UDim2.new(0, 120, 0, 42);
-			CopyBtn.AnchorPoint = Vector2.new(0.5, 0.5);
-			CopyBtn.Position = UDim2.new(0.5, 0, 0.5, 0);
+			local CopyBtn = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\193\187\18\15\85\237\225\170\5\21", "\152\149\222\106\123\23"), Frame);
+			CopyBtn.Size = UDim2.new(0, 100, 0, 35);
+			CopyBtn.Position = UDim2.new(1, -100, 0, 10);
+			CopyBtn.BackgroundColor3 = Theme.ItemBG;
+			CopyBtn.Text = LUAOBFUSACTOR_DECRYPT_STR_0("\254\41\230\90\245\241\47\248\72", "\213\189\70\150\35");
 			CopyBtn.TextColor3 = Color3.fromRGB(255, 255, 255);
 			CopyBtn.Font = Enum.Font.GothamBold;
 			CopyBtn.TextScaled = true;
 			CopyBtn.ZIndex = 5;
-			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\150\101\162\19\174\1\166\94", "\111\195\44\225\124\220"), CopyBtn).CornerRadius = UDim.new(0, 14);
+			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\122\124\87\7\93\91\113\26", "\104\47\53\20"), CopyBtn).CornerRadius = UDim.new(0, 14);
 			CopyBtn.AutoButtonColor = false;
-			local CopyBtnGradient = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\237\111\39\97\170\175\209\67\14\103", "\203\184\38\96\19\203"), CopyBtn);
+			local CopyBtnGradient = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\150\101\166\14\189\11\170\73\143\8", "\111\195\44\225\124\220"), CopyBtn);
 			CopyBtnGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Theme.AccentStart),ColorSequenceKeypoint.new(1, Theme.AccentEnd)});
 			CopyBtnGradient.Rotation = 45;
 			local defaultCopySize = CopyBtn.Size;
 			CopyBtn.MouseEnter:Connect(function()
-				TweenService:Create(CopyBtn, TweenInfo.new(0.1), {[LUAOBFUSACTOR_DECRYPT_STR_0("\10\122\99\68", "\174\89\19\25\33")]=(defaultCopySize + UDim2.new(0, 0, 0, 2))}):Play();
+				TweenService:Create(CopyBtn, TweenInfo.new(0.1), {[LUAOBFUSACTOR_DECRYPT_STR_0("\235\79\26\118", "\203\184\38\96\19\203")]=(defaultCopySize + UDim2.new(0, 0, 0, 2))}):Play();
 			end);
 			CopyBtn.MouseLeave:Connect(function()
-				TweenService:Create(CopyBtn, TweenInfo.new(0.1), {[LUAOBFUSACTOR_DECRYPT_STR_0("\28\27\72\75", "\107\79\114\50\46\151\231")]=defaultCopySize}):Play();
+				TweenService:Create(CopyBtn, TweenInfo.new(0.1), {[LUAOBFUSACTOR_DECRYPT_STR_0("\10\122\99\68", "\174\89\19\25\33")]=defaultCopySize}):Play();
 			end);
 			CopyBtn.MouseButton1Click:Connect(function()
 				if setclipboard then
 					pcall(function()
 						setclipboard(Box.Text);
 					end);
-					CopyBtn.Text = LUAOBFUSACTOR_DECRYPT_STR_0("\26\169\165\32\143\61\246", "\160\89\198\213\73\234\89\215");
+					CopyBtn.Text = LUAOBFUSACTOR_DECRYPT_STR_0("\12\29\66\71\242\131\74", "\107\79\114\50\46\151\231");
 					task.wait(2);
-					CopyBtn.Text = LUAOBFUSACTOR_DECRYPT_STR_0("\107\126\164\231\133\100\120\186\245", "\165\40\17\212\158");
+					CopyBtn.Text = LUAOBFUSACTOR_DECRYPT_STR_0("\26\169\165\48\202\21\190\206\50", "\160\89\198\213\73\234\89\215");
 				else
-					SendNotification(LUAOBFUSACTOR_DECRYPT_STR_0("\198\213\1\35\36\234\216\26\55\102\208\215\9\37\39\236\213\9\49\42\224", "\70\133\185\104\83"), LUAOBFUSACTOR_DECRYPT_STR_0("\39\68\74\36\198\16\5\71\37\217\29\5\75\36\137\16\77\77\57\137\1\93\65\41\220\16\74\86\100", "\169\100\37\36\74"), 3);
+					SendNotification(LUAOBFUSACTOR_DECRYPT_STR_0("\107\125\189\238\199\71\112\166\250\133\125\127\181\232\196\65\125\181\252\201\77", "\165\40\17\212\158"), LUAOBFUSACTOR_DECRYPT_STR_0("\198\216\6\61\41\241\153\11\60\54\252\153\7\61\102\241\209\1\32\102\224\193\13\48\51\241\214\26\125", "\70\133\185\104\83"), 3);
 				end
 			end);
 		end;
 		return Elements;
 	end;
 	WindowAPI.Init = function(self)
-		local CreditsTab = WindowAPI:Tab(LUAOBFUSACTOR_DECRYPT_STR_0("\35\149\167\84\9\147\177", "\48\96\231\194"));
-		CreditsTab:LinkBox({[LUAOBFUSACTOR_DECRYPT_STR_0("\230\91\3\40", "\227\168\58\110\77\121\184\207")]=LUAOBFUSACTOR_DECRYPT_STR_0("\95\53\172\67\190\201\117\229\72\57\173\86\180\201", "\197\27\92\223\32\209\187\17"),[LUAOBFUSACTOR_DECRYPT_STR_0("\47\86\205\240", "\155\99\63\163")]=LUAOBFUSACTOR_DECRYPT_STR_0("\138\197\181\157\170\222\205\158\165\132\170\135\141\195\165\195\190\131\205\227\169\169\183\177\179\195\245\169\172", "\228\226\177\193\237\217")});
+		local CreditsTab = WindowAPI:Tab(LUAOBFUSACTOR_DECRYPT_STR_0("\39\87\65\46\192\16\86", "\169\100\37\36\74"));
+		CreditsTab:LinkBox({[LUAOBFUSACTOR_DECRYPT_STR_0("\46\134\175\85", "\48\96\231\194")]=LUAOBFUSACTOR_DECRYPT_STR_0("\236\83\29\46\22\202\171\195\251\95\28\59\28\202", "\227\168\58\110\77\121\184\207"),[LUAOBFUSACTOR_DECRYPT_STR_0("\87\53\177\75", "\197\27\92\223\32\209\187\17")]=LUAOBFUSACTOR_DECRYPT_STR_0("\11\75\215\235\16\5\140\180\7\86\208\248\12\77\199\181\4\88\140\201\11\123\205\206\50\77\151\223\22", "\155\99\63\163")});
 	end;
-	Library.WindowInstance = MainFrame;
-	Library.TabContainer = PagesContainer;
 	return WindowAPI;
 end;
 return Library;
