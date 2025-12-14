@@ -220,7 +220,7 @@ Library.Window = function(self, options)
 	local KBtn = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\246\18\245\27\63\253\10\224\8\53\209", "\90\191\127\148\124"), KGui);
 	KBtn.Image = KINGHUB_DECAL_ID;
 	KBtn.BackgroundTransparency = 1;
-	KBtn.Size = UDim2.new(0, 100, 0, 100);
+	KBtn.Size = UDim2.new(0, 25, 0, 25);
 	local KRatio = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\77\174\15\4\104\130\45\3\74\134\58\30\119\164\33\25\107\147\60\22\113\137\58", "\119\24\231\78"), KBtn);
 	KRatio.AspectRatio = 1;
 	if Library.Flags[LUAOBFUSACTOR_DECRYPT_STR_0("\189\18\142\117\236\111\34\189\21\154\121\223\65\29\135", "\113\226\77\197\42\188\32")] then
