@@ -47,7 +47,6 @@ Library.MainScale = nil;
 Library.CurrentTab = nil;
 Library.Music = nil;
 Library.SavedVolumes = {};
-Library.AudioConnections = {};
 local KINGHUB_DECAL_ID = LUAOBFUSACTOR_DECRYPT_STR_0("\168\86\174\65\169\71\179\84\179\80\236\15\245\12\239\19\233\12\230\24\232\7\230\17\237\6\238", "\32\218\52\214");
 local GIFT_DECAL_ID = LUAOBFUSACTOR_DECRYPT_STR_0("\92\21\41\169\226\163\64\78\71\19\107\231\190\232\19\9\28\78\99\240\160\226\29\14\26\69\102", "\58\46\119\81\200\145\208\37");
 local CHRISTMAS_MUSIC_ID = LUAOBFUSACTOR_DECRYPT_STR_0("\57\142\40\173\186\174\51\63\133\52\246\230\242\103\115\223\104\250\255\234\97\125\216", "\86\75\236\80\204\201\221");
@@ -102,40 +101,20 @@ Library.Load = function(self)
 	end
 end;
 Library.SetAudioIsolation = function(self, enabled)
-	if Library.AudioConnections then
-		for _, conn in pairs(Library.AudioConnections) do
-			if conn then
-				conn:Disconnect();
-			end
-		end
-		Library.AudioConnections = {};
-	end
 	if enabled then
-		local function checkAndMute(obj)
+		local function muteOnce(obj)
 			if (obj:IsA(LUAOBFUSACTOR_DECRYPT_STR_0("\179\168\210\245\83", "\159\224\199\167\155\55")) and (obj.Name ~= LUAOBFUSACTOR_DECRYPT_STR_0("\207\254\61\193\218\230\47\219\244", "\178\151\147\92")) and (obj.Volume > 0)) then
 				Library.SavedVolumes[obj] = obj.Volume;
 				obj.Volume = 0;
 			end
 		end
 		for _, v in pairs(SoundService:GetDescendants()) do
-			checkAndMute(v);
+			pcall(muteOnce, v);
 		end
 		for _, v in pairs(workspace:GetDescendants()) do
-			checkAndMute(v);
+			pcall(muteOnce, v);
 		end
-		local conn1 = workspace.DescendantAdded:Connect(checkAndMute);
-		local conn2 = SoundService.DescendantAdded:Connect(checkAndMute);
-		table.insert(Library.AudioConnections, conn1);
-		table.insert(Library.AudioConnections, conn2);
 	else
-		if Library.AudioConnections then
-			for _, conn in pairs(Library.AudioConnections) do
-				if conn then
-					conn:Disconnect();
-				end
-			end
-			Library.AudioConnections = {};
-		end
 		for soundObj, originalVol in pairs(Library.SavedVolumes) do
 			if (soundObj and soundObj.Parent) then
 				soundObj.Volume = originalVol;
@@ -1342,7 +1321,7 @@ Library.Window = function(self, options)
 		CreditsTab:CreditBox({[LUAOBFUSACTOR_DECRYPT_STR_0("\253\184\34\2", "\103\179\217\79")]=LUAOBFUSACTOR_DECRYPT_STR_0("\110\190\15\214\78\158\167\10\132\25\199\87\137\177", "\195\42\215\124\181\33\236"),[LUAOBFUSACTOR_DECRYPT_STR_0("\33\80\57\53", "\152\109\57\87\94\69")]=LUAOBFUSACTOR_DECRYPT_STR_0("\241\195\30\179\173\136\27\231\253\222\25\160\177\192\80\230\254\208\69\145\182\246\90\157\200\197\94\135\171", "\200\153\183\106\195\222\178\52")});
 		local SettingsTab = WindowAPI:Tab("⚙️");
 		SettingsTab:Label({[LUAOBFUSACTOR_DECRYPT_STR_0("\6\230\144\41", "\58\82\131\232\93\41")]=LUAOBFUSACTOR_DECRYPT_STR_0("\160\95\194\28\78\43\142\86\195\85\120\41\134\89\196", "\95\227\55\176\117\61"),[LUAOBFUSACTOR_DECRYPT_STR_0("\57\114\42\76\165", "\203\120\30\67\43")]=Enum.TextXAlignment.Center});
-		SettingsTab:Toggle({[LUAOBFUSACTOR_DECRYPT_STR_0("\223\36\64\234", "\185\145\69\45\143")]=LUAOBFUSACTOR_DECRYPT_STR_0("\168\30\26\173\219\152\16\12\168\216\202\50\12\181\213\137\95\81\139\201\158\26\10\230\243\158\23\28\180\207\195", "\188\234\127\121\198"),[LUAOBFUSACTOR_DECRYPT_STR_0("\30\62\18\132", "\227\88\82\115")]=LUAOBFUSACTOR_DECRYPT_STR_0("\124\32\130\170\3\96\110\10\169\174\1", "\19\35\127\218\199\98"),[LUAOBFUSACTOR_DECRYPT_STR_0("\56\254\12\227\9\247\30", "\130\124\155\106")]=true,[LUAOBFUSACTOR_DECRYPT_STR_0("\246\202\250\163\161\247\127\180", "\223\181\171\150\207\195\150\28")]=function(val)
+		SettingsTab:Toggle({[LUAOBFUSACTOR_DECRYPT_STR_0("\223\36\64\234", "\185\145\69\45\143")]=LUAOBFUSACTOR_DECRYPT_STR_0("\168\30\26\173\219\152\16\12\168\216\202\50\12\181\213\137", "\188\234\127\121\198"),[LUAOBFUSACTOR_DECRYPT_STR_0("\30\62\18\132", "\227\88\82\115")]=LUAOBFUSACTOR_DECRYPT_STR_0("\124\32\130\170\3\96\110\10\169\174\1", "\19\35\127\218\199\98"),[LUAOBFUSACTOR_DECRYPT_STR_0("\56\254\12\227\9\247\30", "\130\124\155\106")]=true,[LUAOBFUSACTOR_DECRYPT_STR_0("\246\202\250\163\161\247\127\180", "\223\181\171\150\207\195\150\28")]=function(val)
 			if Library.Music then
 				if val then
 					Library.Music:Resume();
