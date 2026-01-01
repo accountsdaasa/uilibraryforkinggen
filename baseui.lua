@@ -777,8 +777,7 @@ Library.Window = function(self, options)
 			local RenderStep;
 			local function CloseDropdown()
 				Open = false;
-				Scroll.Visible = false;
-				Scroll.Parent = MainBtn;
+				DropdownHolder.Visible = false;
 				InputBlocker.Visible = false;
 				if BlockerConnection then
 					BlockerConnection:Disconnect();
@@ -956,8 +955,7 @@ Library.Window = function(self, options)
 			end
 			local function CloseDropdown()
 				Open = false;
-				Scroll.Visible = false;
-				Scroll.Parent = MainBtn;
+				DropdownHolder.Visible = false;
 				InputBlocker.Visible = false;
 				if BlockerConnection then
 					BlockerConnection:Disconnect();
