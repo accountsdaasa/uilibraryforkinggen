@@ -58,6 +58,7 @@ Library.ThemesFile = LUAOBFUSACTOR_DECRYPT_STR_0("\213\74\55\219\0\210\12\56\197
 Library.ActiveLoops = {};
 Library.MainScale = nil;
 Library.CurrentTab = nil;
+Library.OpenDropdowns = {};
 local KINGHUB_DECAL_ID = LUAOBFUSACTOR_DECRYPT_STR_0("\250\15\65\255\200\241\135\58\225\9\3\177\148\187\210\124\189\92\14\172\137\186\219\121\191\93\14", "\78\136\109\57\158\187\130\226");
 task.spawn(function()
 	pcall(function()
@@ -351,6 +352,11 @@ Library.Window = function(self, options)
 	local function SetState(isMinimized)
 		Library.Flags[LUAOBFUSACTOR_DECRYPT_STR_0("\49\146\69\205\52\175\39\131\89\201\34\184\43\137", "\226\110\205\16\132\107")] = isMinimized;
 		Library:Save();
+		if isMinimized then
+			for _, closeFunc in pairs(Library.OpenDropdowns) do
+				pcall(closeFunc);
+			end
+		end
 		local kSize = Library.Flags[LUAOBFUSACTOR_DECRYPT_STR_0("\212\252\203\230\114\226\217\229", "\33\139\163\128\185")] or DEFAULTS.KSize;
 		if isMinimized then
 			Tween(ShadowHolder, {[LUAOBFUSACTOR_DECRYPT_STR_0("\103\87\23\215\67\81\11\208", "\190\55\56\100")]=UDim2.new(0.5, 0, 1.5, 0),[LUAOBFUSACTOR_DECRYPT_STR_0("\100\160\40\31\7\234\252\88", "\147\54\207\92\126\115\131")]=10}, 0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In);
@@ -772,18 +778,41 @@ Library.Window = function(self, options)
 			Layout.SortOrder = Enum.SortOrder.LayoutOrder;
 			local Open = false;
 			local RenderStep;
+			local function CloseDropdown()
+				Open = false;
+				Scroll.Visible = false;
+				Scroll.Parent = MainBtn;
+				InputBlocker.Visible = false;
+				if BlockerConnection then
+					BlockerConnection:Disconnect();
+					BlockerConnection = nil;
+				end
+				if RenderStep then
+					RenderStep:Disconnect();
+					RenderStep = nil;
+				end
+				for i, v in ipairs(Library.OpenDropdowns) do
+					if (v == CloseDropdown) then
+						table.remove(Library.OpenDropdowns, i);
+						break;
+					end
+				end
+			end
 			local function UpdatePosition()
-				if (Open and DropdownHolder.Parent) then
+				if (Open and DropdownHolder.Parent and MainFrame.Visible) then
 					local btnPos = MainBtn.AbsolutePosition;
 					local btnSize = MainBtn.AbsoluteSize;
 					DropdownHolder.Position = UDim2.new(0, btnPos.X, 0, btnPos.Y + btnSize.Y + 4);
 					DropdownHolder.Size = UDim2.new(0, btnSize.X, 0, math.min(Layout.AbsoluteContentSize.Y + 10, 160));
+				elseif Open then
+					CloseDropdown();
 				end
 			end
 			local function ToggleMenu()
 				Open = not Open;
 				PlayClickSound();
 				if Open then
+					table.insert(Library.OpenDropdowns, CloseDropdown);
 					DropdownHolder.Parent = ScreenGui;
 					DropdownHolder.Visible = true;
 					InputBlocker.Visible = true;
@@ -814,14 +843,9 @@ Library.Window = function(self, options)
 					end
 					UpdatePosition();
 				else
-					DropdownHolder.Visible = false;
-					DropdownHolder.Parent = nil;
-					InputBlocker.Visible = false;
+					CloseDropdown();
 					Tween(Chevron, {[LUAOBFUSACTOR_DECRYPT_STR_0("\202\32\42\41\193\76\13\74", "\36\152\79\94\72\181\37\98")]=90}, 0.2);
 					Tween(MainStroke, {[LUAOBFUSACTOR_DECRYPT_STR_0("\244\215\75\48\197", "\95\183\184\39")]=Theme.UIStrokeColor,[LUAOBFUSACTOR_DECRYPT_STR_0("\129\45\230\40\71\144\3\167\58\233\37\77", "\98\213\95\135\70\52\224")]=0.8}, 0.2);
-					if RenderStep then
-						RenderStep:Disconnect();
-					end
 				end
 			end
 			InputBlocker.MouseButton1Click:Connect(function()
@@ -933,18 +957,41 @@ Library.Window = function(self, options)
 				end
 				SelectedText.Text = ((count > 0) and (count .. LUAOBFUSACTOR_DECRYPT_STR_0("\11\240\17\225\42\171\95\198\16", "\200\43\163\116\141\79"))) or LUAOBFUSACTOR_DECRYPT_STR_0("\140\51\49\134\179\224\163\150\34\56\142\163\186\173\241", "\131\223\86\93\227\208\148");
 			end
+			local function CloseDropdown()
+				Open = false;
+				Scroll.Visible = false;
+				Scroll.Parent = MainBtn;
+				InputBlocker.Visible = false;
+				if BlockerConnection then
+					BlockerConnection:Disconnect();
+					BlockerConnection = nil;
+				end
+				if RenderStep then
+					RenderStep:Disconnect();
+					RenderStep = nil;
+				end
+				for i, v in ipairs(Library.OpenDropdowns) do
+					if (v == CloseDropdown) then
+						table.remove(Library.OpenDropdowns, i);
+						break;
+					end
+				end
+			end
 			local function UpdatePosition()
-				if (Open and DropdownHolder.Parent) then
+				if (Open and DropdownHolder.Parent and MainFrame.Visible) then
 					local btnPos = MainBtn.AbsolutePosition;
 					local btnSize = MainBtn.AbsoluteSize;
 					DropdownHolder.Position = UDim2.new(0, btnPos.X, 0, btnPos.Y + btnSize.Y + 4);
 					DropdownHolder.Size = UDim2.new(0, btnSize.X, 0, math.min(Layout.AbsoluteContentSize.Y + 10, 160));
+				elseif Open then
+					CloseDropdown();
 				end
 			end
 			local function ToggleMenu()
 				Open = not Open;
 				PlayClickSound();
 				if Open then
+					table.insert(Library.OpenDropdowns, CloseDropdown);
 					DropdownHolder.Parent = ScreenGui;
 					DropdownHolder.Visible = true;
 					InputBlocker.Visible = true;
@@ -978,14 +1025,9 @@ Library.Window = function(self, options)
 					end
 					UpdatePosition();
 				else
-					DropdownHolder.Visible = false;
-					DropdownHolder.Parent = nil;
-					InputBlocker.Visible = false;
+					CloseDropdown();
 					Tween(Chevron, {[LUAOBFUSACTOR_DECRYPT_STR_0("\120\184\8\212\85\133\172\68", "\195\42\215\124\181\33\236")]=90}, 0.2);
 					Tween(MainStroke, {[LUAOBFUSACTOR_DECRYPT_STR_0("\46\86\59\49\55", "\152\109\57\87\94\69")]=Theme.UIStrokeColor,[LUAOBFUSACTOR_DECRYPT_STR_0("\205\197\11\173\173\194\85\186\252\217\9\186", "\200\153\183\106\195\222\178\52")]=0.8}, 0.2);
-					if RenderStep then
-						RenderStep:Disconnect();
-					end
 				end
 			end
 			InputBlocker.MouseButton1Click:Connect(function()
