@@ -32,6 +32,9 @@ local Players = game:GetService(LUAOBFUSACTOR_DECRYPT_STR_0("\155\40\17\47\118\1
 local VirtualUser = game:GetService(LUAOBFUSACTOR_DECRYPT_STR_0("\112\212\36\232\85\121\233\205\85\216\36", "\152\38\189\86\156\32\24\133"));
 local RunService = game:GetService(LUAOBFUSACTOR_DECRYPT_STR_0("\206\66\169\117\249\69\177\79\255\82", "\38\156\55\199"));
 local function Tween(obj, props, time, style, dir)
+	if not obj then
+		return;
+	end
 	TweenService:Create(obj, TweenInfo.new(time or 0.3, style or Enum.EasingStyle.Quint, dir or Enum.EasingDirection.Out), props):Play();
 end
 local CLICK_SOUND_ID = LUAOBFUSACTOR_DECRYPT_STR_0("\186\127\100\41\0\103\255\87\161\121\38\103\92\35\175\23\253\46\45\127\69\44\171", "\35\200\29\28\72\115\20\154");
@@ -1479,6 +1482,9 @@ Library.Window = function(self, options)
 			local clean = string.upper(string.gsub(val, " ", ""));
 			Library.Flags[LUAOBFUSACTOR_DECRYPT_STR_0("\200\194\30\211\10\255\193\242\214\47\197", "\173\151\157\74\188\109\152")] = clean;
 		end});
+		if (not Library.CurrentTab and (#TabButtons > 0)) then
+			Library.CurrentTab = TabButtons[1].Name;
+		end
 		Library:ApplyTheme(Library.Flags[LUAOBFUSACTOR_DECRYPT_STR_0("\27\55\27\200\206\70\208\253\48\60\48\216\209\81", "\147\68\104\88\189\188\52\181")] or LUAOBFUSACTOR_DECRYPT_STR_0("\62\141\141\209\15\132\159", "\176\122\232\235"));
 	end;
 	return WindowAPI;
