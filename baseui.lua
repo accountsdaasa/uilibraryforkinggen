@@ -905,6 +905,8 @@ Library.Window = function(self, options)
 			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\115\226\208\230\110\225\67\217", "\143\38\171\147\137\28"), DropdownHolder).CornerRadius = UDim.new(0, 8);
 			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\229\171\138\231\17\236\223\213", "\180\176\226\217\147\99\131"), DropdownHolder).Color = Theme.AccentStart;
 			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\230\144\28\19\193\182\36\2", "\103\179\217\79"), DropdownHolder).Thickness = 1;
+			local SearchBar = nil;
+			local SearchInput = nil;
 			local Scroll = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\121\180\14\218\77\128\170\68\176\58\199\64\129\166", "\195\42\215\124\181\33\236"), DropdownHolder);
 			Scroll.Size = UDim2.new(1, -4, 1, -4);
 			Scroll.Position = UDim2.new(0, 2, 0, 2);
@@ -940,8 +942,12 @@ Library.Window = function(self, options)
 				if (Open and DropdownHolder.Parent and MainFrame.Visible) then
 					local btnPos = MainBtn.AbsolutePosition;
 					local btnSize = MainBtn.AbsoluteSize;
+					local contentHeight = Layout.AbsoluteContentSize.Y;
+					if SearchBar then
+						contentHeight = contentHeight + 35;
+					end
 					DropdownHolder.Position = UDim2.new(0, btnPos.X, 0, btnPos.Y + btnSize.Y + 4);
-					DropdownHolder.Size = UDim2.new(0, btnSize.X, 0, math.min(Layout.AbsoluteContentSize.Y + 10, 160));
+					DropdownHolder.Size = UDim2.new(0, btnSize.X, 0, math.min(contentHeight + 10, 200));
 				elseif Open then
 					CloseDropdown();
 				end
@@ -962,8 +968,49 @@ Library.Window = function(self, options)
 							child:Destroy();
 						end
 					end
+					if SearchBar then
+						SearchBar:Destroy();
+						SearchBar = nil;
+					end
+					local hasSearch = #options.List > 7;
+					local offset = 0;
+					if hasSearch then
+						offset = 35;
+						SearchBar = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\215\55\76\226\220", "\185\145\69\45\143"), DropdownHolder);
+						SearchBar.Size = UDim2.new(1, -10, 0, 30);
+						SearchBar.Position = UDim2.new(0, 5, 0, 5);
+						SearchBar.BackgroundColor3 = Theme.WindowBG;
+						Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\191\54\58\169\206\132\26\11", "\188\234\127\121\198"), SearchBar).CornerRadius = UDim.new(0, 6);
+						Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\13\27\32\151\42\61\24\134", "\227\88\82\115"), SearchBar).Color = Theme.UIStrokeColor;
+						SearchInput = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\119\26\162\179\32\124\91", "\19\35\127\218\199\98"), SearchBar);
+						SearchInput.Size = UDim2.new(1, -10, 1, 0);
+						SearchInput.Position = UDim2.new(0, 5, 0, 0);
+						SearchInput.BackgroundTransparency = 1;
+						SearchInput.PlaceholderText = LUAOBFUSACTOR_DECRYPT_STR_0("\47\254\11\240\31\243\68\172\82", "\130\124\155\106");
+						SearchInput.TextColor3 = Theme.Text;
+						SearchInput.Font = Enum.Font.Gotham;
+						SearchInput.TextSize = 13;
+						Scroll.Size = UDim2.new(1, -4, 1, -40);
+						Scroll.Position = UDim2.new(0, 2, 0, 38);
+						SearchInput:GetPropertyChangedSignal(LUAOBFUSACTOR_DECRYPT_STR_0("\225\206\238\187", "\223\181\171\150\207\195\150\28")):Connect(function()
+							local text = string.lower(SearchInput.Text);
+							for _, btn in pairs(Scroll:GetChildren()) do
+								if btn:IsA(LUAOBFUSACTOR_DECRYPT_STR_0("\120\63\251\186\43\89\46\247\161\7", "\105\44\90\131\206")) then
+									if string.find(string.lower(btn.Text), text) then
+										btn.Visible = true;
+									else
+										btn.Visible = false;
+									end
+								end
+							end
+							Scroll.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y);
+						end);
+					else
+						Scroll.Size = UDim2.new(1, -4, 1, -4);
+						Scroll.Position = UDim2.new(0, 2, 0, 2);
+					end
 					for _, item in ipairs(options.List) do
-						local ItemBtn = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\197\32\85\251\251\228\49\89\224\215", "\185\145\69\45\143"), Scroll);
+						local ItemBtn = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\203\229\170\173\42\43\235\244\189\183", "\94\159\128\210\217\104"), Scroll);
 						ItemBtn.Size = UDim2.new(1, 0, 0, 28);
 						ItemBtn.BackgroundTransparency = 1;
 						ItemBtn.Text = item;
@@ -982,8 +1029,8 @@ Library.Window = function(self, options)
 					UpdatePosition();
 				else
 					CloseDropdown();
-					Tween(Chevron, {[LUAOBFUSACTOR_DECRYPT_STR_0("\184\16\13\167\200\131\16\23", "\188\234\127\121\198")]=90}, 0.2);
-					Tween(MainStroke, {[LUAOBFUSACTOR_DECRYPT_STR_0("\27\61\31\140\42", "\227\88\82\115")]=Theme.UIStrokeColor,[LUAOBFUSACTOR_DECRYPT_STR_0("\119\13\187\169\17\99\66\13\191\169\1\106", "\19\35\127\218\199\98")]=0.8}, 0.2);
+					Tween(Chevron, {[LUAOBFUSACTOR_DECRYPT_STR_0("\98\246\18\190\75\118\246\116", "\26\48\153\102\223\63\31\153")]=90}, 0.2);
+					Tween(MainStroke, {[LUAOBFUSACTOR_DECRYPT_STR_0("\33\79\225\252\16", "\147\98\32\141")]=Theme.UIStrokeColor,[LUAOBFUSACTOR_DECRYPT_STR_0("\44\81\226\196\21\70\74\10\70\237\201\31", "\43\120\35\131\170\102\54")]=0.8}, 0.2);
 				end
 			end
 			InputBlocker.MouseButton1Click:Connect(function()
@@ -1013,13 +1060,13 @@ Library.Window = function(self, options)
 			local dFlag = options.Flag;
 			local default = Library.Flags[dFlag] or {};
 			Library.Flags[dFlag] = default;
-			local Frame = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\58\233\11\239\25", "\130\124\155\106"), Page);
+			local Frame = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\114\20\134\187\160", "\228\52\102\231\214\197\208"), Page);
 			Frame.Size = UDim2.new(1, 0, 0, 65);
 			Frame.BackgroundColor3 = Theme.ItemBG;
 			Frame.ZIndex = 5;
-			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\224\226\213\160\177\248\121\173", "\223\181\171\150\207\195\150\28"), Frame).CornerRadius = UDim.new(0, 8);
+			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\43\201\86\197\248\133\28\196", "\182\126\128\21\170\138\235\121"), Frame).CornerRadius = UDim.new(0, 8);
 			table.insert(Library.ThemeObjects.BgItems, Frame);
-			local Label = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\120\63\251\186\37\77\56\230\162", "\105\44\90\131\206"), Frame);
+			local Label = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\191\223\45\242\170\18\50\3\135", "\102\235\186\85\134\230\115\80"), Frame);
 			Label.Text = options.Name;
 			Label.Size = UDim2.new(1, 0, 0, 20);
 			Label.Position = UDim2.new(0, 10, 0, 5);
@@ -1029,21 +1076,21 @@ Library.Window = function(self, options)
 			Label.BackgroundTransparency = 1;
 			Label.TextXAlignment = Enum.TextXAlignment.Left;
 			table.insert(Library.ThemeObjects.Texts, Label);
-			local MainBtn = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\203\229\170\173\42\43\235\244\189\183", "\94\159\128\210\217\104"), Frame);
+			local MainBtn = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\99\9\38\75\80\193\54\67\3\48", "\66\55\108\94\63\18\180"), Frame);
 			MainBtn.Size = UDim2.new(1, -20, 0, 32);
 			MainBtn.Position = UDim2.new(0, 10, 0, 28);
 			MainBtn.BackgroundColor3 = Theme.WindowBG;
 			MainBtn.Text = "";
 			MainBtn.AutoButtonColor = false;
 			MainBtn.ZIndex = 6;
-			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\101\208\37\176\77\113\252\104", "\26\48\153\102\223\63\31\153"), MainBtn).CornerRadius = UDim.new(0, 6);
-			local MainStroke = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\55\105\222\231\16\79\230\246", "\147\98\32\141"), MainBtn);
+			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\33\164\166\56\53\87\17\159", "\57\116\237\229\87\71"), MainBtn).CornerRadius = UDim.new(0, 6);
+			local MainStroke = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\159\152\222\243\101\225\76\175", "\39\202\209\141\135\23\142"), MainBtn);
 			MainStroke.Color = Theme.UIStrokeColor;
 			MainStroke.Transparency = 0.8;
 			MainStroke.Thickness = 1;
 			table.insert(Library.ThemeObjects.Strokes, MainStroke);
-			local SelectedText = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\44\70\251\222\42\87\73\29\79", "\43\120\35\131\170\102\54"), MainBtn);
-			SelectedText.Text = LUAOBFUSACTOR_DECRYPT_STR_0("\103\3\139\179\166\164\196\125\18\130\187\182\254\202\26", "\228\52\102\231\214\197\208");
+			local SelectedText = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\203\54\17\30\30\249\253\54\5", "\152\159\83\105\106\82"), MainBtn);
+			SelectedText.Text = LUAOBFUSACTOR_DECRYPT_STR_0("\178\195\93\247\202\72\193\239\69\247\196\79\207\136\31", "\60\225\166\49\146\169");
 			SelectedText.Size = UDim2.new(1, -30, 1, 0);
 			SelectedText.Position = UDim2.new(0, 10, 0, 0);
 			SelectedText.Font = Enum.Font.Gotham;
@@ -1053,7 +1100,7 @@ Library.Window = function(self, options)
 			SelectedText.BackgroundTransparency = 1;
 			SelectedText.ZIndex = 7;
 			table.insert(Library.ThemeObjects.Texts, SelectedText);
-			local Chevron = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\42\229\109\222\198\138\27\211\18", "\182\126\128\21\170\138\235\121"), MainBtn);
+			local Chevron = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\27\27\55\62\45\6\45\27\35", "\103\79\126\79\74\97"), MainBtn);
 			Chevron.Text = ">";
 			Chevron.Size = UDim2.new(0, 30, 1, 0);
 			Chevron.Position = UDim2.new(1, -30, 0, 0);
@@ -1064,17 +1111,19 @@ Library.Window = function(self, options)
 			Chevron.Rotation = 90;
 			Chevron.ZIndex = 7;
 			table.insert(Library.ThemeObjects.TextDarks, Chevron);
-			local DropdownHolder = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\173\200\52\235\131", "\102\235\186\85\134\230\115\80"), ScreenGui);
-			DropdownHolder.Name = LUAOBFUSACTOR_DECRYPT_STR_0("\122\25\50\75\123\240\48\88\28\58\80\101\218", "\66\55\108\94\63\18\180");
+			local DropdownHolder = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\156\109\210\126\91", "\122\218\31\179\19\62"), ScreenGui);
+			DropdownHolder.Name = LUAOBFUSACTOR_DECRYPT_STR_0("\158\195\193\213\192\133\87\188\198\201\206\222\175", "\37\211\182\173\161\169\193");
 			DropdownHolder.BackgroundColor3 = Theme.ItemBG;
 			DropdownHolder.BackgroundTransparency = 0.05;
 			DropdownHolder.Size = UDim2.new(0, 0, 0, 0);
 			DropdownHolder.Visible = false;
 			DropdownHolder.ZIndex = 600;
-			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\33\164\166\56\53\87\17\159", "\57\116\237\229\87\71"), DropdownHolder).CornerRadius = UDim.new(0, 8);
-			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\159\152\222\243\101\225\76\175", "\39\202\209\141\135\23\142"), DropdownHolder).Color = Theme.AccentStart;
-			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\202\26\58\30\32\247\244\54", "\152\159\83\105\106\82"), DropdownHolder).Thickness = 1;
-			local Scroll = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\178\197\67\253\197\80\136\200\86\212\219\93\140\195", "\60\225\166\49\146\169"), DropdownHolder);
+			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\194\19\110\214\58\117\188\229", "\217\151\90\45\185\72\27"), DropdownHolder).CornerRadius = UDim.new(0, 8);
+			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\246\85\212\6\68\204\119\226", "\54\163\28\135\114"), DropdownHolder).Color = Theme.AccentStart;
+			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\29\242\110\150\92\112\35\222", "\31\72\187\61\226\46"), DropdownHolder).Thickness = 1;
+			local SearchBar = nil;
+			local SearchInput = nil;
+			local Scroll = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\240\5\81\221\75\114\45\205\1\101\192\70\115\33", "\68\163\102\35\178\39\30"), DropdownHolder);
 			Scroll.Size = UDim2.new(1, -4, 1, -4);
 			Scroll.Position = UDim2.new(0, 2, 0, 2);
 			Scroll.BackgroundTransparency = 1;
@@ -1082,7 +1131,7 @@ Library.Window = function(self, options)
 			Scroll.ScrollBarImageColor3 = Theme.AccentEnd;
 			Scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y;
 			Scroll.CanvasSize = UDim2.new(0, 0, 0, 0);
-			local Layout = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\26\55\3\35\18\19\3\31\54\37\20\19", "\103\79\126\79\74\97"), Scroll);
+			local Layout = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\139\89\246\206\16\161\175\16\167\127\207\211", "\113\222\16\186\167\99\213\227"), Scroll);
 			Layout.SortOrder = Enum.SortOrder.LayoutOrder;
 			local Open = false;
 			local RenderStep;
@@ -1093,7 +1142,7 @@ Library.Window = function(self, options)
 						count = count + 1;
 					end
 				end
-				SelectedText.Text = ((count > 0) and (count .. LUAOBFUSACTOR_DECRYPT_STR_0("\250\76\214\127\91\25\174\122\215", "\122\218\31\179\19\62"))) or LUAOBFUSACTOR_DECRYPT_STR_0("\128\211\193\196\202\181\5\154\194\200\204\218\239\11\253", "\37\211\182\173\161\169\193");
+				SelectedText.Text = ((count > 0) and (count .. LUAOBFUSACTOR_DECRYPT_STR_0("\110\61\254\250\43\13\239\243\42", "\150\78\110\155"))) or LUAOBFUSACTOR_DECRYPT_STR_0("\182\192\43\228\167\10\255\105\145\192\42\242\234\80\241", "\32\229\165\71\129\196\126\223");
 			end
 			local function CloseDropdown()
 				Open = false;
@@ -1118,8 +1167,12 @@ Library.Window = function(self, options)
 				if (Open and DropdownHolder.Parent and MainFrame.Visible) then
 					local btnPos = MainBtn.AbsolutePosition;
 					local btnSize = MainBtn.AbsoluteSize;
+					local contentHeight = Layout.AbsoluteContentSize.Y;
+					if SearchBar then
+						contentHeight = contentHeight + 35;
+					end
 					DropdownHolder.Position = UDim2.new(0, btnPos.X, 0, btnPos.Y + btnSize.Y + 4);
-					DropdownHolder.Size = UDim2.new(0, btnSize.X, 0, math.min(Layout.AbsoluteContentSize.Y + 10, 160));
+					DropdownHolder.Size = UDim2.new(0, btnSize.X, 0, math.min(contentHeight + 10, 200));
 				elseif Open then
 					CloseDropdown();
 				end
@@ -1132,19 +1185,60 @@ Library.Window = function(self, options)
 					DropdownHolder.Parent = ScreenGui;
 					DropdownHolder.Visible = true;
 					InputBlocker.Visible = true;
-					Tween(Chevron, {[LUAOBFUSACTOR_DECRYPT_STR_0("\197\53\89\216\60\114\182\249", "\217\151\90\45\185\72\27")]=-90}, 0.2);
-					Tween(MainStroke, {[LUAOBFUSACTOR_DECRYPT_STR_0("\224\115\235\29\68", "\54\163\28\135\114")]=Theme.AccentStart,[LUAOBFUSACTOR_DECRYPT_STR_0("\28\201\92\140\93\111\41\201\88\140\77\102", "\31\72\187\61\226\46")]=0.5}, 0.2);
+					Tween(Chevron, {[LUAOBFUSACTOR_DECRYPT_STR_0("\241\134\208\128\149\220\204\135", "\181\163\233\164\225\225")]=-90}, 0.2);
+					Tween(MainStroke, {[LUAOBFUSACTOR_DECRYPT_STR_0("\115\132\50\120\66", "\23\48\235\94")]=Theme.AccentStart,[LUAOBFUSACTOR_DECRYPT_STR_0("\72\200\217\83\68\35\211\110\223\214\94\78", "\178\28\186\184\61\55\83")]=0.5}, 0.2);
 					RenderStep = RunService.RenderStepped:Connect(UpdatePosition);
 					for _, child in ipairs(Scroll:GetChildren()) do
-						if child:IsA(LUAOBFUSACTOR_DECRYPT_STR_0("\247\3\91\198\101\107\48\215\9\77", "\68\163\102\35\178\39\30")) then
+						if child:IsA(LUAOBFUSACTOR_DECRYPT_STR_0("\240\200\95\40\208\27\225\208\194\73", "\149\164\173\39\92\146\110")) then
 							child:Destroy();
 						end
+					end
+					if SearchBar then
+						SearchBar:Destroy();
+						SearchBar = nil;
+					end
+					local hasSearch = #options.List > 7;
+					local offset = 0;
+					if hasSearch then
+						offset = 35;
+						SearchBar = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\213\53\17\18\31", "\123\147\71\112\127\122"), DropdownHolder);
+						SearchBar.Size = UDim2.new(1, -10, 0, 30);
+						SearchBar.Position = UDim2.new(0, 5, 0, 5);
+						SearchBar.BackgroundColor3 = Theme.WindowBG;
+						Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\249\228\161\126\84\194\200\144", "\38\172\173\226\17"), SearchBar).CornerRadius = UDim.new(0, 6);
+						Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\120\56\31\251\95\30\39\234", "\143\45\113\76"), SearchBar).Color = Theme.UIStrokeColor;
+						SearchInput = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\140\189\4\40\154\183\4", "\92\216\216\124"), SearchBar);
+						SearchInput.Size = UDim2.new(1, -10, 1, 0);
+						SearchInput.Position = UDim2.new(0, 5, 0, 0);
+						SearchInput.BackgroundTransparency = 1;
+						SearchInput.PlaceholderText = LUAOBFUSACTOR_DECRYPT_STR_0("\104\55\173\82\254\83\124\226\14", "\157\59\82\204\32");
+						SearchInput.TextColor3 = Theme.Text;
+						SearchInput.Font = Enum.Font.Gotham;
+						SearchInput.TextSize = 13;
+						Scroll.Size = UDim2.new(1, -4, 1, -40);
+						Scroll.Position = UDim2.new(0, 2, 0, 38);
+						SearchInput:GetPropertyChangedSignal(LUAOBFUSACTOR_DECRYPT_STR_0("\12\59\251\238", "\209\88\94\131\154\137\138\179")):Connect(function()
+							local text = string.lower(SearchInput.Text);
+							for _, btn in pairs(Scroll:GetChildren()) do
+								if btn:IsA(LUAOBFUSACTOR_DECRYPT_STR_0("\28\164\220\104\60\54\37\54\39\175", "\66\72\193\164\28\126\67\81")) then
+									if string.find(string.lower(btn.Text), text) then
+										btn.Visible = true;
+									else
+										btn.Visible = false;
+									end
+								end
+							end
+							Scroll.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y);
+						end);
+					else
+						Scroll.Size = UDim2.new(1, -4, 1, -4);
+						Scroll.Position = UDim2.new(0, 2, 0, 2);
 					end
 					for _, item in ipairs(options.List) do
 						if (Library.Flags[dFlag][item] == nil) then
 							Library.Flags[dFlag][item] = false;
 						end
-						local ItemBtn = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\138\117\194\211\33\160\151\5\177\126", "\113\222\16\186\167\99\213\227"), Scroll);
+						local ItemBtn = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\211\41\176\76\4\99\243\56\167\86", "\22\135\76\200\56\70"), Scroll);
 						ItemBtn.Size = UDim2.new(1, 0, 0, 28);
 						ItemBtn.BackgroundTransparency = 1;
 						ItemBtn.Text = item;
@@ -1163,8 +1257,8 @@ Library.Window = function(self, options)
 					UpdatePosition();
 				else
 					CloseDropdown();
-					Tween(Chevron, {[LUAOBFUSACTOR_DECRYPT_STR_0("\28\1\239\247\58\7\244\248", "\150\78\110\155")]=90}, 0.2);
-					Tween(MainStroke, {[LUAOBFUSACTOR_DECRYPT_STR_0("\166\202\43\238\182", "\32\229\165\71\129\196\126\223")]=Theme.UIStrokeColor,[LUAOBFUSACTOR_DECRYPT_STR_0("\247\155\197\143\146\197\194\155\193\143\130\204", "\181\163\233\164\225\225")]=0.8}, 0.2);
+					Tween(Chevron, {[LUAOBFUSACTOR_DECRYPT_STR_0("\191\63\236\37\73\232\130\62", "\129\237\80\152\68\61")]=90}, 0.2);
+					Tween(MainStroke, {[LUAOBFUSACTOR_DECRYPT_STR_0("\114\167\8\252\14", "\56\49\200\100\147\124\119")]=Theme.UIStrokeColor,[LUAOBFUSACTOR_DECRYPT_STR_0("\248\44\190\254\223\46\190\226\201\48\188\233", "\144\172\94\223")]=0.8}, 0.2);
 				end
 			end
 			InputBlocker.MouseButton1Click:Connect(function()
@@ -1180,13 +1274,13 @@ Library.Window = function(self, options)
 			local cFlag = options.Flag;
 			local default = Library.Flags[cFlag] or options.Default or options.List[1];
 			Library.Flags[cFlag] = default;
-			local Frame = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\118\153\63\122\85", "\23\48\235\94"), Page);
+			local Frame = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\2\29\163\74\33", "\39\68\111\194"), Page);
 			Frame.Size = UDim2.new(1, 0, 0, 65);
 			Frame.BackgroundColor3 = Theme.ItemBG;
 			Frame.ZIndex = 5;
-			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\73\243\251\82\69\61\215\110", "\178\28\186\184\61\55\83"), Frame).CornerRadius = UDim.new(0, 8);
+			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\227\143\196\200\107\185\211\180", "\215\182\198\135\167\25"), Frame).CornerRadius = UDim.new(0, 8);
 			table.insert(Library.ThemeObjects.BgItems, Frame);
-			local Label = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\240\200\95\40\222\15\247\193\193", "\149\164\173\39\92\146\110"), Frame);
+			local Label = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\185\76\242\92\161\72\232\77\129", "\40\237\41\138"), Frame);
 			Label.Text = options.Name;
 			Label.Size = UDim2.new(1, 0, 0, 20);
 			Label.Position = UDim2.new(0, 10, 0, 5);
@@ -1196,7 +1290,7 @@ Library.Window = function(self, options)
 			Label.BackgroundTransparency = 1;
 			Label.TextXAlignment = Enum.TextXAlignment.Left;
 			table.insert(Library.ThemeObjects.Texts, Label);
-			local Button = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\199\34\8\11\56\14\231\51\31\17", "\123\147\71\112\127\122"), Frame);
+			local Button = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\243\113\226\236\104\210\96\238\247\68", "\42\167\20\154\152"), Frame);
 			Button.Size = UDim2.new(1, -20, 0, 32);
 			Button.Position = UDim2.new(0, 10, 0, 28);
 			Button.BackgroundColor3 = Theme.WindowBG;
@@ -1206,8 +1300,8 @@ Library.Window = function(self, options)
 			Button.TextSize = 14;
 			Button.AutoButtonColor = false;
 			Button.ZIndex = 6;
-			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\249\228\161\126\84\194\200\144", "\38\172\173\226\17"), Button).CornerRadius = UDim.new(0, 6);
-			local BtnStroke = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\120\56\31\251\95\30\39\234", "\143\45\113\76"), Button);
+			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\127\215\129\77\99\47\79\236", "\65\42\158\194\34\17"), Button).CornerRadius = UDim.new(0, 6);
+			local BtnStroke = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\47\14\97\24\63\226\16\235", "\142\122\71\50\108\77\141\123"), Button);
 			BtnStroke.Color = Theme.UIStrokeColor;
 			BtnStroke.Transparency = 0.8;
 			BtnStroke.Thickness = 1;
@@ -1222,9 +1316,9 @@ Library.Window = function(self, options)
 				local val = options.List[idx];
 				Library.Flags[cFlag] = val;
 				Button.Text = val;
-				Tween(Button, {[LUAOBFUSACTOR_DECRYPT_STR_0("\154\185\31\55\191\170\19\41\182\188\63\51\180\183\14\111", "\92\216\216\124")]=Theme.ItemBG}, 0.1);
+				Tween(Button, {[LUAOBFUSACTOR_DECRYPT_STR_0("\55\163\252\19\60\7\173\234\22\63\54\173\243\23\41\70", "\91\117\194\159\120")]=Theme.ItemBG}, 0.1);
 				task.wait(0.1);
-				Tween(Button, {[LUAOBFUSACTOR_DECRYPT_STR_0("\121\51\175\75\250\73\61\185\78\249\120\61\160\79\239\8", "\157\59\82\204\32")]=Theme.WindowBG}, 0.1);
+				Tween(Button, {[LUAOBFUSACTOR_DECRYPT_STR_0("\56\28\61\19\50\227\43\15\19\58\59\58\253\43\8\78", "\68\122\125\94\120\85\145")]=Theme.WindowBG}, 0.1);
 				pcall(options.Callback, val);
 				Library:Save();
 			end);
@@ -1234,13 +1328,13 @@ Library.Window = function(self, options)
 			local tFlag = options.Flag;
 			local default = Library.Flags[tFlag] or options.Default or "";
 			Library.Flags[tFlag] = default;
-			local Frame = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\30\44\226\247\236", "\209\88\94\131\154\137\138\179"), Page);
+			local Frame = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\49\14\206\83\205", "\218\119\124\175\62\168\185"), Page);
 			Frame.Size = UDim2.new(1, 0, 0, 65);
 			Frame.BackgroundColor3 = Theme.ItemBG;
 			Frame.ZIndex = 5;
-			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\29\136\231\115\12\45\52\48", "\66\72\193\164\28\126\67\81"), Frame).CornerRadius = UDim.new(0, 8);
+			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\144\217\107\203\183\254\77\214", "\164\197\144\40"), Frame).CornerRadius = UDim.new(0, 8);
 			table.insert(Library.ThemeObjects.BgItems, Frame);
-			local Label = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\211\41\176\76\10\119\229\41\164", "\22\135\76\200\56\70"), Frame);
+			local Label = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\183\245\178\159\241\183\129\245\166", "\214\227\144\202\235\189"), Frame);
 			Label.Text = options.Name;
 			Label.Size = UDim2.new(1, 0, 0, 20);
 			Label.Position = UDim2.new(0, 10, 0, 5);
@@ -1250,20 +1344,20 @@ Library.Window = function(self, options)
 			Label.BackgroundTransparency = 1;
 			Label.TextXAlignment = Enum.TextXAlignment.Left;
 			table.insert(Library.ThemeObjects.Texts, Label);
-			local InputContainer = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\171\34\249\41\88", "\129\237\80\152\68\61"), Frame);
+			local InputContainer = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\203\183\134\118\21", "\92\141\197\231\27\112\211\51"), Frame);
 			InputContainer.Size = UDim2.new(1, -20, 0, 32);
 			InputContainer.Position = UDim2.new(0, 10, 0, 28);
 			InputContainer.BackgroundColor3 = Theme.WindowBG;
 			InputContainer.ClipsDescendants = true;
-			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\100\129\39\252\14\25\93\67", "\56\49\200\100\147\124\119"), InputContainer).CornerRadius = UDim.new(0, 6);
-			local InputStroke = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\249\23\140\228\222\49\180\245", "\144\172\94\223"), InputContainer);
+			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\211\214\169\172\195\232\250\152", "\177\134\159\234\195"), InputContainer).CornerRadius = UDim.new(0, 6);
+			local InputStroke = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\136\194\12\180\219\178\224\58", "\169\221\139\95\192"), InputContainer);
 			InputStroke.Color = Theme.UIStrokeColor;
 			InputStroke.Transparency = 0.8;
 			table.insert(Library.ThemeObjects.Strokes, InputStroke);
-			local Input = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\16\10\186\83\6\0\186", "\39\68\111\194"), InputContainer);
+			local Input = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\234\142\103\43\0\41\198", "\70\190\235\31\95\66"), InputContainer);
 			Input.Size = UDim2.new(1, -10, 1, 0);
 			Input.Position = UDim2.new(0, 5, 0, 0);
-			Input.PlaceholderText = options.Placeholder or LUAOBFUSACTOR_DECRYPT_STR_0("\152\232\169", "\215\182\198\135\167\25");
+			Input.PlaceholderText = options.Placeholder or LUAOBFUSACTOR_DECRYPT_STR_0("\244\172\84", "\133\218\130\122\134");
 			Input.Text = default;
 			Input.BackgroundTransparency = 1;
 			Input.TextColor3 = Theme.Text;
@@ -1273,10 +1367,10 @@ Library.Window = function(self, options)
 			Input.TextTruncate = Enum.TextTruncate.AtEnd;
 			table.insert(Library.ThemeObjects.Texts, Input);
 			Input.Focused:Connect(function()
-				Tween(InputStroke, {[LUAOBFUSACTOR_DECRYPT_STR_0("\174\70\230\71\159", "\40\237\41\138")]=Theme.AccentStart,[LUAOBFUSACTOR_DECRYPT_STR_0("\243\102\251\246\89\215\117\232\253\68\196\109", "\42\167\20\154\152")]=0.2}, 0.3);
+				Tween(InputStroke, {[LUAOBFUSACTOR_DECRYPT_STR_0("\31\240\239\203\206", "\88\92\159\131\164\188\195")]=Theme.AccentStart,[LUAOBFUSACTOR_DECRYPT_STR_0("\180\60\190\69\196\251\220\146\43\177\72\206", "\189\224\78\223\43\183\139")]=0.2}, 0.3);
 			end);
 			Input.FocusLost:Connect(function()
-				Tween(InputStroke, {[LUAOBFUSACTOR_DECRYPT_STR_0("\105\241\174\77\99", "\65\42\158\194\34\17")]=Theme.UIStrokeColor,[LUAOBFUSACTOR_DECRYPT_STR_0("\46\53\83\2\62\253\26\252\31\41\81\21", "\142\122\71\50\108\77\141\123")]=0.8}, 0.3);
+				Tween(InputStroke, {[LUAOBFUSACTOR_DECRYPT_STR_0("\13\243\134\25\211", "\161\78\156\234\118")]=Theme.UIStrokeColor,[LUAOBFUSACTOR_DECRYPT_STR_0("\147\165\200\210\180\167\200\206\162\185\202\197", "\188\199\215\169")]=0.8}, 0.3);
 				Library.Flags[tFlag] = Input.Text;
 				pcall(options.Callback, Input.Text);
 				Library:Save();
@@ -1285,14 +1379,14 @@ Library.Window = function(self, options)
 		end;
 		Elements.TextBox = Elements.Input;
 		Elements.Button = function(self, options)
-			local Frame = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\51\176\254\21\62", "\91\117\194\159\120"), Page);
+			local Frame = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\218\27\94\118\237", "\136\156\105\63\27"), Page);
 			Frame.Size = UDim2.new(1, 0, 0, 42);
 			Frame.BackgroundTransparency = 1;
 			local btnName = options.Name;
 			if (not btnName or (btnName == "")) then
 				return;
 			end
-			local Btn = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\46\24\38\12\23\228\48\14\18\48", "\68\122\125\94\120\85\145"), Frame);
+			local Btn = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\47\137\97\32\57\153\109\32\20\130", "\84\123\236\25"), Frame);
 			Btn.Size = UDim2.new(1, 0, 1, 0);
 			Btn.BackgroundColor3 = Theme.ItemBG;
 			Btn.Text = btnName;
@@ -1301,41 +1395,41 @@ Library.Window = function(self, options)
 			Btn.TextSize = 14;
 			Btn.AutoButtonColor = false;
 			Btn.ZIndex = 6;
-			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\34\53\236\81\218\215\191\5", "\218\119\124\175\62\168\185"), Btn).CornerRadius = UDim.new(0, 8);
-			local BtnGradient = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\144\217\111\214\164\244\65\193\171\228", "\164\197\144\40"), Btn);
+			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\197\162\137\24\190\187\245\153", "\213\144\235\202\119\204"), Btn).CornerRadius = UDim.new(0, 8);
+			local BtnGradient = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\22\49\249\56\41\39\68\38\22\202", "\45\67\120\190\74\72\67"), Btn);
 			BtnGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Theme.AccentStart),ColorSequenceKeypoint.new(1, Theme.AccentEnd)});
 			table.insert(Library.ThemeObjects.Gradients, BtnGradient);
-			local BtnStroke = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\182\217\153\159\207\185\136\245", "\214\227\144\202\235\189"), Btn);
+			local BtnStroke = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\21\11\222\177\235\135\229\236", "\137\64\66\141\197\153\232\142"), Btn);
 			BtnStroke.Color = Theme.AccentStart;
 			BtnStroke.Transparency = 0.8;
 			BtnStroke.Thickness = 1;
 			Btn.MouseEnter:Connect(function()
-				Tween(Btn, {[LUAOBFUSACTOR_DECRYPT_STR_0("\207\164\132\112\23\161\92\41\227\161\179\105\17\189\64\44\236\183\130\117\19\170", "\92\141\197\231\27\112\211\51")]=0.1}, 0.2);
-				Tween(BtnStroke, {[LUAOBFUSACTOR_DECRYPT_STR_0("\210\237\139\173\194\246\254\152\166\223\229\230", "\177\134\159\234\195")]=0.4}, 0.2);
+				Tween(Btn, {[LUAOBFUSACTOR_DECRYPT_STR_0("\33\209\33\173\143\17\223\55\168\140\55\194\35\168\155\19\209\48\163\134\0\201", "\232\99\176\66\198")]=0.1}, 0.2);
+				Tween(BtnStroke, {[LUAOBFUSACTOR_DECRYPT_STR_0("\216\51\41\8\104\157\248\62\233\47\43\31", "\76\140\65\72\102\27\237\153")]=0.4}, 0.2);
 			end);
 			Btn.MouseLeave:Connect(function()
-				Tween(Btn, {[LUAOBFUSACTOR_DECRYPT_STR_0("\159\234\60\171\206\175\228\42\174\205\137\249\62\174\218\173\234\45\165\199\190\242", "\169\221\139\95\192")]=0}, 0.2);
-				Tween(BtnStroke, {[LUAOBFUSACTOR_DECRYPT_STR_0("\234\153\126\49\49\54\223\153\122\49\33\63", "\70\190\235\31\95\66")]=0.8}, 0.2);
+				Tween(Btn, {[LUAOBFUSACTOR_DECRYPT_STR_0("\104\219\21\217\208\19\177\95\212\18\230\197\0\176\89\202\23\192\210\15\189\83", "\222\42\186\118\178\183\97")]=0}, 0.2);
+				Tween(BtnStroke, {[LUAOBFUSACTOR_DECRYPT_STR_0("\105\254\69\132\78\252\69\152\88\226\71\147", "\234\61\140\36")]=0.8}, 0.2);
 			end);
 			Btn.MouseButton1Click:Connect(function()
 				PlayClickSound();
 				task.spawn(function()
-					Tween(Btn, {[LUAOBFUSACTOR_DECRYPT_STR_0("\142\231\2\242\214\179\248\31", "\133\218\130\122\134")]=12}, 0.05);
+					Tween(Btn, {[LUAOBFUSACTOR_DECRYPT_STR_0("\21\216\162\102\60\40\199\191", "\111\65\189\218\18")]=12}, 0.05);
 					task.wait(0.05);
-					Tween(Btn, {[LUAOBFUSACTOR_DECRYPT_STR_0("\8\250\251\208\239\170\34\57", "\88\92\159\131\164\188\195")]=14}, 0.05);
+					Tween(Btn, {[LUAOBFUSACTOR_DECRYPT_STR_0("\119\78\3\33\56\85\181\70", "\207\35\43\123\85\107\60")]=14}, 0.05);
 				end);
 				pcall(options.Callback);
 			end);
 		end;
 		Elements.CreditBox = function(self, options)
-			local Frame = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\166\60\190\70\210", "\189\224\78\223\43\183\139"), Page);
+			local Frame = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\86\184\161\231\124", "\25\16\202\192\138"), Page);
 			Frame.Size = UDim2.new(1, 0, 0, 95);
 			Frame.BackgroundColor3 = Theme.ItemBG;
 			Frame.ZIndex = 5;
-			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\27\213\169\25\211\32\249\152", "\161\78\156\234\118"), Frame).CornerRadius = UDim.new(0, 8);
+			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\200\226\142\237\187\250\248\217", "\148\157\171\205\130\201"), Frame).CornerRadius = UDim.new(0, 8);
 			table.insert(Library.ThemeObjects.BgItems, Frame);
-			local Label = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\147\178\209\200\139\182\203\217\171", "\188\199\215\169"), Frame);
-			Label.Text = options.Name or LUAOBFUSACTOR_DECRYPT_STR_0("\223\27\90\127\225\232", "\136\156\105\63\27");
+			local Label = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\23\209\108\61\253\247\33\209\120", "\150\67\180\20\73\177"), Frame);
+			Label.Text = options.Name or LUAOBFUSACTOR_DECRYPT_STR_0("\174\10\31\73\132\12", "\45\237\120\122");
 			Label.Size = UDim2.new(1, 0, 0, 20);
 			Label.Font = Enum.Font.GothamMedium;
 			Label.TextSize = 14;
@@ -1343,12 +1437,12 @@ Library.Window = function(self, options)
 			Label.BackgroundTransparency = 1;
 			Label.TextXAlignment = Enum.TextXAlignment.Center;
 			table.insert(Library.ThemeObjects.Texts, Label);
-			local BoxContainer = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\61\158\120\57\30", "\84\123\236\25"), Frame);
+			local BoxContainer = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\241\250\163\33\210", "\76\183\136\194"), Frame);
 			BoxContainer.Size = UDim2.new(0.9, 0, 0, 32);
 			BoxContainer.Position = UDim2.new(0.05, 0, 0, 24);
 			BoxContainer.BackgroundColor3 = Theme.WindowBG;
-			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\197\162\137\24\190\187\245\153", "\213\144\235\202\119\204"), BoxContainer).CornerRadius = UDim.new(0, 8);
-			local Box = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\23\29\198\62\10\44\85", "\45\67\120\190\74\72\67"), BoxContainer);
+			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\79\207\198\55\66\65\17\104", "\116\26\134\133\88\48\47"), BoxContainer).CornerRadius = UDim.new(0, 8);
+			local Box = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\42\196\184\240\159\125\6", "\18\126\161\192\132\221"), BoxContainer);
 			Box.Size = UDim2.new(1, 0, 1, 0);
 			Box.Text = options.Link or "";
 			Box.TextColor3 = Theme.Text;
@@ -1358,18 +1452,18 @@ Library.Window = function(self, options)
 			Box.TextEditable = false;
 			Box.ClearTextOnFocus = false;
 			table.insert(Library.ThemeObjects.Texts, Box);
-			local CopyBtn = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\20\39\245\177\219\157\250\253\47\44", "\137\64\66\141\197\153\232\142"), Frame);
+			local CopyBtn = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\107\45\182\16\116\74\60\186\11\88", "\54\63\72\206\100"), Frame);
 			CopyBtn.Size = UDim2.new(0.5, 0, 0, 28);
 			CopyBtn.Position = UDim2.new(0.25, 0, 0, 62);
 			CopyBtn.BackgroundColor3 = Theme.AccentStart;
-			CopyBtn.Text = LUAOBFUSACTOR_DECRYPT_STR_0("\32\223\50\191", "\232\99\176\66\198");
+			CopyBtn.Text = LUAOBFUSACTOR_DECRYPT_STR_0("\235\86\85\99", "\27\168\57\37\26\133");
 			CopyBtn.TextColor3 = Color3.new(1, 1, 1);
 			CopyBtn.Font = Enum.Font.GothamBold;
 			CopyBtn.TextSize = 13;
 			CopyBtn.AutoButtonColor = false;
 			CopyBtn.ZIndex = 6;
-			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\217\8\11\9\105\131\252\62", "\76\140\65\72\102\27\237\153"), CopyBtn).CornerRadius = UDim.new(0, 8);
-			local CopyGradient = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\127\243\49\192\214\5\183\79\212\2", "\222\42\186\118\178\183\97"), CopyBtn);
+			Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\24\131\95\167\197\35\175\110", "\183\77\202\28\200"), CopyBtn).CornerRadius = UDim.new(0, 8);
+			local CopyGradient = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\34\26\174\26\22\55\128\13\25\39", "\104\119\83\233"), CopyBtn);
 			CopyGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Theme.AccentStart),ColorSequenceKeypoint.new(1, Theme.AccentEnd)});
 			table.insert(Library.ThemeObjects.Gradients, CopyGradient);
 			CopyBtn.MouseButton1Click:Connect(function()
@@ -1378,12 +1472,12 @@ Library.Window = function(self, options)
 					pcall(function()
 						setclipboard(options.Link or "");
 					end);
-					CopyBtn.Text = LUAOBFUSACTOR_DECRYPT_STR_0("\126\227\84\131\88\232\5", "\234\61\140\36");
+					CopyBtn.Text = LUAOBFUSACTOR_DECRYPT_STR_0("\214\247\55\43\70\241\185", "\35\149\152\71\66");
 					task.delay(2, function()
-						CopyBtn.Text = LUAOBFUSACTOR_DECRYPT_STR_0("\2\210\170\107", "\111\65\189\218\18");
+						CopyBtn.Text = LUAOBFUSACTOR_DECRYPT_STR_0("\58\231\82\169", "\90\121\136\34\208");
 					end);
 				else
-					SendNotification(LUAOBFUSACTOR_DECRYPT_STR_0("\102\89\9\58\25", "\207\35\43\123\85\107\60"), "Your executor doesn't support clipboard.", 3);
+					SendNotification(LUAOBFUSACTOR_DECRYPT_STR_0("\226\28\71\17\213", "\126\167\110\53"), "Your executor doesn't support clipboard.", 3);
 				end
 			end);
 		end;
@@ -1391,48 +1485,53 @@ Library.Window = function(self, options)
 			self:CreditBox(options);
 		end;
 		Elements.Spacer = function(self, height)
-			local Frame = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\86\184\161\231\124", "\25\16\202\192\138"), Page);
+			local Frame = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\27\2\47\245\217", "\95\93\112\78\152\188"), Page);
 			Frame.Size = UDim2.new(1, 0, 0, height or 10);
 			Frame.BackgroundTransparency = 1;
 		end;
 		Elements.Label = function(self, options)
-			local Frame = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\219\217\172\239\172", "\148\157\171\205\130\201"), Page);
+			local Frame = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\231\231\132\24\225", "\178\161\149\229\117\132\222"), Page);
 			Frame.Size = UDim2.new(1, 0, 0, 26);
 			Frame.BackgroundTransparency = 1;
-			local Text = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\23\209\108\61\253\247\33\209\120", "\150\67\180\20\73\177"), Frame);
+			local Text = Instance.new(LUAOBFUSACTOR_DECRYPT_STR_0("\188\222\197\184\141\23\164\38\132", "\67\232\187\189\204\193\118\198"), Frame);
 			Text.Size = UDim2.new(1, 0, 1, 0);
-			Text.Text = options.Text or LUAOBFUSACTOR_DECRYPT_STR_0("\161\25\24\72\129", "\45\237\120\122");
+			Text.Text = options.Text or LUAOBFUSACTOR_DECRYPT_STR_0("\167\47\183\37\55", "\143\235\78\213\64\91\98");
 			Text.TextColor3 = options.Color or Theme.Text;
 			Text.Font = Enum.Font.GothamBold;
 			Text.TextSize = 14;
 			Text.BackgroundTransparency = 1;
 			Text.TextXAlignment = options.Align or Enum.TextXAlignment.Left;
+			local LabelAPI = {};
+			LabelAPI.Set = function(self, newText)
+				Text.Text = newText;
+			end;
+			return LabelAPI;
 		end;
 		return Elements;
 	end;
 	WindowAPI.Init = function(self)
-		local CreditsTab = WindowAPI:Tab(LUAOBFUSACTOR_DECRYPT_STR_0("\244\250\167\40\222\252\177", "\76\183\136\194"));
-		CreditsTab:Label({[LUAOBFUSACTOR_DECRYPT_STR_0("\78\227\253\44", "\116\26\134\133\88\48\47")]=LUAOBFUSACTOR_DECRYPT_STR_0("\43\232\224\230\164\50\50\200\186\225\153\119\8", "\18\126\161\192\132\221"),[LUAOBFUSACTOR_DECRYPT_STR_0("\126\36\167\3\88", "\54\63\72\206\100")]=Enum.TextXAlignment.Center,[LUAOBFUSACTOR_DECRYPT_STR_0("\235\86\73\117\247", "\27\168\57\37\26\133")]=Theme.AccentEnd});
+		local CreditsTab = WindowAPI:Tab(LUAOBFUSACTOR_DECRYPT_STR_0("\174\90\129\237\121\162\158", "\214\237\40\228\137\16"));
+		CreditsTab:Label({[LUAOBFUSACTOR_DECRYPT_STR_0("\177\230\247\205", "\198\229\131\143\185\99")]=LUAOBFUSACTOR_DECRYPT_STR_0("\100\165\232\113\72\204\132\122\75\137\140\118\71", "\19\49\236\200"),[LUAOBFUSACTOR_DECRYPT_STR_0("\223\59\255\176\234", "\218\158\87\150\215\132")]=Enum.TextXAlignment.Center,[LUAOBFUSACTOR_DECRYPT_STR_0("\216\17\213\237\36", "\173\155\126\185\130\86\66")]=Theme.AccentEnd});
 		CreditsTab:Spacer(5);
-		CreditsTab:CreditBox({[LUAOBFUSACTOR_DECRYPT_STR_0("\3\171\113\173", "\183\77\202\28\200")]=LUAOBFUSACTOR_DECRYPT_STR_0("\51\58\154\11\24\33\141\72\36\54\155\30\18\33", "\104\119\83\233"),[LUAOBFUSACTOR_DECRYPT_STR_0("\217\241\41\41", "\35\149\152\71\66")]=LUAOBFUSACTOR_DECRYPT_STR_0("\17\252\86\160\41\67\167\13\180\51\10\235\77\162\62\87\239\69\255\8\17\204\76\133\11\11\188\102\165", "\90\121\136\34\208")});
+		CreditsTab:CreditBox({[LUAOBFUSACTOR_DECRYPT_STR_0("\203\167\183\194", "\140\133\198\218\167\232")]=LUAOBFUSACTOR_DECRYPT_STR_0("\145\39\167\126\139\167\42\244\78\129\167\56\177\111", "\228\213\78\212\29"),[LUAOBFUSACTOR_DECRYPT_STR_0("\171\69\184\14", "\139\231\44\214\101")]=LUAOBFUSACTOR_DECRYPT_STR_0("\209\251\18\78\3\235\126\89\221\230\21\93\31\163\53\88\222\232\73\108\24\149\63\35\232\253\82\122\5", "\118\185\143\102\62\112\209\81")});
 		local SettingsTab = WindowAPI:Tab("⚙️");
-		SettingsTab:Label({[LUAOBFUSACTOR_DECRYPT_STR_0("\243\11\77\10", "\126\167\110\53")]=LUAOBFUSACTOR_DECRYPT_STR_0("\9\24\43\245\217\127\16\17\32\249\219\58\47", "\95\93\112\78\152\188"),[LUAOBFUSACTOR_DECRYPT_STR_0("\224\249\140\18\234", "\178\161\149\229\117\132\222")]=Enum.TextXAlignment.Center});
-		local themeList = {LUAOBFUSACTOR_DECRYPT_STR_0("\172\222\219\173\180\26\178", "\67\232\187\189\204\193\118\198"),LUAOBFUSACTOR_DECRYPT_STR_0("\168\38\167\41\40\22\226\138\61", "\143\235\78\213\64\91\98"),LUAOBFUSACTOR_DECRYPT_STR_0("\190\70\139\254", "\214\237\40\228\137\16"),LUAOBFUSACTOR_DECRYPT_STR_0("\181\234\225\210\26", "\198\229\131\143\185\99")};
+		SettingsTab:Label({[LUAOBFUSACTOR_DECRYPT_STR_0("\104\117\49\242", "\88\60\16\73\134\197\117\124")]=LUAOBFUSACTOR_DECRYPT_STR_0("\100\226\253\197\68\16\199\249\198\64\87\239\234", "\33\48\138\152\168"),[LUAOBFUSACTOR_DECRYPT_STR_0("\83\26\57\86\207", "\87\18\118\80\49\161")]=Enum.TextXAlignment.Center});
+		local themeList = {LUAOBFUSACTOR_DECRYPT_STR_0("\104\27\220\161\165\64\10", "\208\44\126\186\192"),LUAOBFUSACTOR_DECRYPT_STR_0("\212\18\182\207\7\232\196\79\228", "\46\151\122\196\166\116\156\169"),LUAOBFUSACTOR_DECRYPT_STR_0("\214\227\73\13", "\155\133\141\38\122"),LUAOBFUSACTOR_DECRYPT_STR_0("\21\35\162\74\86", "\197\69\74\204\33\47\31")};
 		for name, _ in pairs(Library.SavedThemes) do
 			table.insert(themeList, name);
 		end
-		local ThemeDropdown = SettingsTab:Dropdown({[LUAOBFUSACTOR_DECRYPT_STR_0("\127\141\165\118", "\19\49\236\200")]=LUAOBFUSACTOR_DECRYPT_STR_0("\205\50\250\178\231\174\190\3\254\178\233\191", "\218\158\87\150\215\132"),[LUAOBFUSACTOR_DECRYPT_STR_0("\221\18\216\229", "\173\155\126\185\130\86\66")]=LUAOBFUSACTOR_DECRYPT_STR_0("\218\153\153\210\154\254\224\168\174\243\128\233\232\163", "\140\133\198\218\167\232"),[LUAOBFUSACTOR_DECRYPT_STR_0("\153\39\167\105", "\228\213\78\212\29")]=themeList,[LUAOBFUSACTOR_DECRYPT_STR_0("\163\73\176\4\254\139\88", "\139\231\44\214\101")]=(Library.Flags[LUAOBFUSACTOR_DECRYPT_STR_0("\230\208\37\75\2\163\52\24\205\219\14\91\29\180", "\118\185\143\102\62\112\209\81")] or LUAOBFUSACTOR_DECRYPT_STR_0("\120\117\47\231\176\25\8", "\88\60\16\73\134\197\117\124")),[LUAOBFUSACTOR_DECRYPT_STR_0("\115\235\244\196\67\81\233\243", "\33\48\138\152\168")]=function(val)
+		local ThemeDropdown = SettingsTab:Dropdown({[LUAOBFUSACTOR_DECRYPT_STR_0("\222\78\87\130", "\231\144\47\58")]=LUAOBFUSACTOR_DECRYPT_STR_0("\129\221\214\112\27\41\143\13\186\221\215\112", "\89\210\184\186\21\120\93\175"),[LUAOBFUSACTOR_DECRYPT_STR_0("\151\95\125\210", "\90\209\51\28\181\25")]=LUAOBFUSACTOR_DECRYPT_STR_0("\239\68\116\251\173\194\126\89\250\139\216\126\90\235", "\223\176\27\55\142"),[LUAOBFUSACTOR_DECRYPT_STR_0("\8\178\221\161", "\213\68\219\174")]=themeList,[LUAOBFUSACTOR_DECRYPT_STR_0("\47\229\37\230\63\201\43", "\31\107\128\67\135\74\165\95")]=(Library.Flags[LUAOBFUSACTOR_DECRYPT_STR_0("\231\215\223\88\83\163\221\230\232\121\73\180\213\237", "\209\184\136\156\45\33")] or LUAOBFUSACTOR_DECRYPT_STR_0("\35\205\115\9\173\11\220", "\216\103\168\21\104")),[LUAOBFUSACTOR_DECRYPT_STR_0("\91\172\79\168\122\172\64\175", "\196\24\205\35")]=function(val)
 			Library:ApplyTheme(val);
 		end});
-		SettingsTab:Input({[LUAOBFUSACTOR_DECRYPT_STR_0("\92\23\61\84", "\87\18\118\80\49\161")]=LUAOBFUSACTOR_DECRYPT_STR_0("\127\31\204\165\240\120\22\223\173\181\12\63\201\238\254\2", "\208\44\126\186\192"),[LUAOBFUSACTOR_DECRYPT_STR_0("\209\22\165\193", "\46\151\122\196\166\116\156\169")]=LUAOBFUSACTOR_DECRYPT_STR_0("\218\210\104\31\236\209\229\67\23\254\203\236\75\31", "\155\133\141\38\122"),[LUAOBFUSACTOR_DECRYPT_STR_0("\21\38\173\66\74\119\170\41\46\169\83", "\197\69\74\204\33\47\31")]=LUAOBFUSACTOR_DECRYPT_STR_0("\222\78\87\130\190\1\20", "\231\144\47\58"),[LUAOBFUSACTOR_DECRYPT_STR_0("\145\217\214\121\26\60\204\50", "\89\210\184\186\21\120\93\175")]=function()
+		SettingsTab:Input({[LUAOBFUSACTOR_DECRYPT_STR_0("\0\138\238\3", "\102\78\235\131")]=LUAOBFUSACTOR_DECRYPT_STR_0("\201\47\34\65\7\13\191\49\247\43\116\101\84\119\249\122", "\84\154\78\84\36\39\89\215"),[LUAOBFUSACTOR_DECRYPT_STR_0("\219\237\87\95", "\101\157\129\54\56")]=LUAOBFUSACTOR_DECRYPT_STR_0("\34\150\164\174\52\77\21\172\135\174\13\120\16\172", "\25\125\201\234\203\67"),[LUAOBFUSACTOR_DECRYPT_STR_0("\73\248\25\0\17\47\28\117\240\29\17", "\115\25\148\120\99\116\71")]=LUAOBFUSACTOR_DECRYPT_STR_0("\34\60\180\33\15\66\115", "\33\108\93\217\68"),[LUAOBFUSACTOR_DECRYPT_STR_0("\248\74\173\161\217\74\162\166", "\205\187\43\193")]=function()
 		end});
-		SettingsTab:Button({[LUAOBFUSACTOR_DECRYPT_STR_0("\159\82\113\208", "\90\209\51\28\181\25")]=LUAOBFUSACTOR_DECRYPT_STR_0("\227\122\65\235\255\243\110\69\252\186\222\111\23\218\183\213\118\82", "\223\176\27\55\142"),[LUAOBFUSACTOR_DECRYPT_STR_0("\7\186\194\185\38\186\205\190", "\213\68\219\174")]=function()
-			local name = Library.Flags[LUAOBFUSACTOR_DECRYPT_STR_0("\52\223\13\226\61\241\55\122\6\229\13\230\39\192", "\31\107\128\67\135\74\165\95")];
+		SettingsTab:Button({[LUAOBFUSACTOR_DECRYPT_STR_0("\208\115\8\218", "\191\158\18\101")]=LUAOBFUSACTOR_DECRYPT_STR_0("\246\194\145\178\239\230\214\149\165\170\203\215\199\131\167\192\206\130", "\207\165\163\231\215"),[LUAOBFUSACTOR_DECRYPT_STR_0("\229\248\245\90\38\113\197\242", "\16\166\153\153\54\68")]=function()
+			local name = Library.Flags[LUAOBFUSACTOR_DECRYPT_STR_0("\237\140\238\67\35\21\241\215\190\197\104\53\44\252", "\153\178\211\160\38\84\65")];
 			if (name and (name ~= "")) then
-				Library.SavedThemes[name] = {[LUAOBFUSACTOR_DECRYPT_STR_0("\239\225\242\73\78\166\250\207", "\209\184\136\156\45\33")]=FromColor(Theme.WindowBG),[LUAOBFUSACTOR_DECRYPT_STR_0("\52\193\113\13\186\6\218\87\47", "\216\103\168\21\104")]=FromColor(Theme.SidebarBG),[LUAOBFUSACTOR_DECRYPT_STR_0("\81\185\70\169\90\138", "\196\24\205\35")]=FromColor(Theme.ItemBG),[LUAOBFUSACTOR_DECRYPT_STR_0("\15\136\224\3\32\159\178", "\102\78\235\131")]=FromColor(Theme.AccentStart),[LUAOBFUSACTOR_DECRYPT_STR_0("\219\45\55\65\73\45\229", "\84\154\78\84\36\39\89\215")]=FromColor(Theme.AccentEnd),[LUAOBFUSACTOR_DECRYPT_STR_0("\201\238\81\95\9\248\206\120", "\101\157\129\54\56")]=FromColor(Theme.ToggleON),[LUAOBFUSACTOR_DECRYPT_STR_0("\41\172\146\191", "\25\125\201\234\203\67")]=FromColor(Theme.Text),[LUAOBFUSACTOR_DECRYPT_STR_0("\77\241\0\23\48\38\1\114", "\115\25\148\120\99\116\71")]=FromColor(Theme.TextDark),[LUAOBFUSACTOR_DECRYPT_STR_0("\63\41\171\43\74\9", "\33\108\93\217\68")]=FromColor(Theme.UIStrokeColor)};
+				Library.SavedThemes[name] = {[LUAOBFUSACTOR_DECRYPT_STR_0("\181\2\84\47\141\28\120\12", "\75\226\107\58")]=FromColor(Theme.WindowBG),[LUAOBFUSACTOR_DECRYPT_STR_0("\107\215\21\127\19\195\223\122\249", "\173\56\190\113\26\113\162")]=FromColor(Theme.SidebarBG),[LUAOBFUSACTOR_DECRYPT_STR_0("\226\202\40\8\213\236", "\151\171\190\77\101")]=FromColor(Theme.ItemBG),[LUAOBFUSACTOR_DECRYPT_STR_0("\228\44\251\172\246\105\90", "\107\165\79\152\201\152\29")]=FromColor(Theme.AccentStart),[LUAOBFUSACTOR_DECRYPT_STR_0("\118\77\235\206\90\107\5", "\31\55\46\136\171\52")]=FromColor(Theme.AccentEnd),[LUAOBFUSACTOR_DECRYPT_STR_0("\229\39\219\243\221\45\243\218", "\148\177\72\188")]=FromColor(Theme.ToggleON),[LUAOBFUSACTOR_DECRYPT_STR_0("\146\179\79\199", "\179\198\214\55")]=FromColor(Theme.Text),[LUAOBFUSACTOR_DECRYPT_STR_0("\196\9\106\98\97\210\226\7", "\179\144\108\18\22\37")]=FromColor(Theme.TextDark),[LUAOBFUSACTOR_DECRYPT_STR_0("\245\183\9\134\196\195", "\175\166\195\123\233")]=FromColor(Theme.UIStrokeColor)};
 				Library:Save();
-				Library:Notify({[LUAOBFUSACTOR_DECRYPT_STR_0("\239\66\181\161\222", "\205\187\43\193")]=LUAOBFUSACTOR_DECRYPT_STR_0("\202\122\0\210\251", "\191\158\18\101"),[LUAOBFUSACTOR_DECRYPT_STR_0("\230\204\137\163\170\203\215", "\207\165\163\231\215")]=(LUAOBFUSACTOR_DECRYPT_STR_0("\245\248\239\83\32\42\134", "\16\166\153\153\54\68") .. name)});
-				local newList = {LUAOBFUSACTOR_DECRYPT_STR_0("\246\182\198\71\33\45\237", "\153\178\211\160\38\84\65"),LUAOBFUSACTOR_DECRYPT_STR_0("\161\3\72\34\145\31\87\42\145", "\75\226\107\58"),LUAOBFUSACTOR_DECRYPT_STR_0("\107\208\30\109", "\173\56\190\113\26\113\162"),LUAOBFUSACTOR_DECRYPT_STR_0("\251\215\35\14\238", "\151\171\190\77\101")};
+				Library:Notify({[LUAOBFUSACTOR_DECRYPT_STR_0("\219\203\73\69\245", "\144\143\162\61\41")]=LUAOBFUSACTOR_DECRYPT_STR_0("\212\219\24\93\119", "\83\128\179\125\48\18\231"),[LUAOBFUSACTOR_DECRYPT_STR_0("\126\184\253\201\66\16\73", "\126\61\215\147\189\39")]=(LUAOBFUSACTOR_DECRYPT_STR_0("\75\254\11\64\124\165\93", "\37\24\159\125") .. name)});
+				local newList = {LUAOBFUSACTOR_DECRYPT_STR_0("\254\163\115\67\207\170\97", "\34\186\198\21"),LUAOBFUSACTOR_DECRYPT_STR_0("\219\0\215\84\209\236\5\196\78", "\162\152\104\165\61"),LUAOBFUSACTOR_DECRYPT_STR_0("\254\33\189\106", "\133\173\79\210\29\16"),LUAOBFUSACTOR_DECRYPT_STR_0("\189\117\227\32\148", "\75\237\28\141")};
 				for n, _ in pairs(Library.SavedThemes) do
 					table.insert(newList, n);
 				end
@@ -1440,37 +1539,37 @@ Library.Window = function(self, options)
 			end
 		end});
 		SettingsTab:Spacer(10);
-		SettingsTab:Label({[LUAOBFUSACTOR_DECRYPT_STR_0("\241\42\224\189", "\107\165\79\152\201\152\29")]=LUAOBFUSACTOR_DECRYPT_STR_0("\126\64\252\206\70\121\86\77\237\139\119\112\91\65\250\216", "\31\55\46\136\171\52"),[LUAOBFUSACTOR_DECRYPT_STR_0("\240\36\213\243\223", "\148\177\72\188")]=Enum.TextXAlignment.Center});
+		SettingsTab:Label({[LUAOBFUSACTOR_DECRYPT_STR_0("\232\90\212\165", "\129\188\63\172\209\79\123\135")]=LUAOBFUSACTOR_DECRYPT_STR_0("\105\234\242\200\82\226\231\206\69\164\197\194\76\235\244\222", "\173\32\132\134"),[LUAOBFUSACTOR_DECRYPT_STR_0("\111\23\1\232\160", "\173\46\123\104\143\206\81")]=Enum.TextXAlignment.Center});
 		local colorNames = {};
 		for n, _ in pairs(COLOR_PALETTE) do
 			table.insert(colorNames, n);
 		end
 		table.sort(colorNames);
-		SettingsTab:Dropdown({[LUAOBFUSACTOR_DECRYPT_STR_0("\136\183\90\214", "\179\198\214\55")]=LUAOBFUSACTOR_DECRYPT_STR_0("\209\15\113\115\75\199\176\47\125\122\74\193\176\93", "\179\144\108\18\22\37"),[LUAOBFUSACTOR_DECRYPT_STR_0("\224\175\26\142", "\175\166\195\123\233")]=LUAOBFUSACTOR_DECRYPT_STR_0("\208\253\126\70\252\224\208\110\76\252\234\193\73\24", "\144\143\162\61\41"),[LUAOBFUSACTOR_DECRYPT_STR_0("\204\218\14\68", "\83\128\179\125\48\18\231")]=colorNames,[LUAOBFUSACTOR_DECRYPT_STR_0("\121\178\245\220\82\18\73", "\126\61\215\147\189\39")]=LUAOBFUSACTOR_DECRYPT_STR_0("\72\234\15\85\116\250", "\37\24\159\125"),[LUAOBFUSACTOR_DECRYPT_STR_0("\249\167\121\78\216\167\118\73", "\34\186\198\21")]=function(val)
+		SettingsTab:Dropdown({[LUAOBFUSACTOR_DECRYPT_STR_0("\154\28\47\143", "\97\212\125\66\234\37\227")]=LUAOBFUSACTOR_DECRYPT_STR_0("\171\224\181\48\16\158\163\149\58\18\133\241\246\100", "\126\234\131\214\85"),[LUAOBFUSACTOR_DECRYPT_STR_0("\162\217\72\93", "\47\228\181\41\58")]=LUAOBFUSACTOR_DECRYPT_STR_0("\153\195\250\52\15\63\13\149\249\213\62\0\36\78", "\127\198\156\185\91\99\80"),[LUAOBFUSACTOR_DECRYPT_STR_0("\217\19\223\228", "\190\149\122\172\144\199\107\89")]=colorNames,[LUAOBFUSACTOR_DECRYPT_STR_0("\22\0\247\255\235\62\17", "\158\82\101\145\158")]=LUAOBFUSACTOR_DECRYPT_STR_0("\64\235\16\6\72\117", "\36\16\158\98\118"),[LUAOBFUSACTOR_DECRYPT_STR_0("\227\23\207\247\90\233\36\238", "\133\160\118\163\155\56\136\71")]=function(val)
 			if COLOR_PALETTE[val] then
 				Theme.AccentStart = Color3.fromHSV(COLOR_PALETTE[val], 0.75, 1);
 				Library:ApplyTheme(nil);
 			end
 		end});
-		SettingsTab:Dropdown({[LUAOBFUSACTOR_DECRYPT_STR_0("\214\9\200\88", "\162\152\104\165\61")]=LUAOBFUSACTOR_DECRYPT_STR_0("\236\44\177\120\126\241\141\12\189\113\127\247\141\125", "\133\173\79\210\29\16"),[LUAOBFUSACTOR_DECRYPT_STR_0("\171\112\236\44", "\75\237\28\141")]=LUAOBFUSACTOR_DECRYPT_STR_0("\227\96\239\190\35\20\245\210\217\83\201\178\59\73", "\129\188\63\172\209\79\123\135"),[LUAOBFUSACTOR_DECRYPT_STR_0("\108\237\245\217", "\173\32\132\134")]=colorNames,[LUAOBFUSACTOR_DECRYPT_STR_0("\106\30\14\238\187\61\217", "\173\46\123\104\143\206\81")]=LUAOBFUSACTOR_DECRYPT_STR_0("\150\17\55\143", "\97\212\125\66\234\37\227"),[LUAOBFUSACTOR_DECRYPT_STR_0("\169\226\186\57\28\139\224\189", "\126\234\131\214\85")]=function(val)
+		SettingsTab:Dropdown({[LUAOBFUSACTOR_DECRYPT_STR_0("\216\163\124\247", "\213\150\194\17\146\214\127")]=LUAOBFUSACTOR_DECRYPT_STR_0("\58\170\167\209\72\176\226\21\20\165\171\198\6\246", "\86\123\201\196\180\38\196\194"),[LUAOBFUSACTOR_DECRYPT_STR_0("\209\228\216\168", "\207\151\136\185")]=LUAOBFUSACTOR_DECRYPT_STR_0("\151\188\11\141\120\119\99\155\134\36\135\119\108\35", "\17\200\227\72\226\20\24"),[LUAOBFUSACTOR_DECRYPT_STR_0("\156\72\8\195", "\159\208\33\123\183\169\145\143")]=colorNames,[LUAOBFUSACTOR_DECRYPT_STR_0("\214\95\62\55\231\86\44", "\86\146\58\88")]=LUAOBFUSACTOR_DECRYPT_STR_0("\122\211\255\197", "\154\56\191\138\160\206\137\86"),[LUAOBFUSACTOR_DECRYPT_STR_0("\165\88\249\139\126\59\130\199", "\172\230\57\149\231\28\90\225")]=function(val)
 			if COLOR_PALETTE[val] then
 				Theme.AccentEnd = Color3.fromHSV(COLOR_PALETTE[val], 0.75, 1);
 				Library:ApplyTheme(nil);
 			end
 		end});
-		SettingsTab:Dropdown({[LUAOBFUSACTOR_DECRYPT_STR_0("\170\212\68\95", "\47\228\181\41\58")]=LUAOBFUSACTOR_DECRYPT_STR_0("\146\243\222\60\15\53\95\137\210\153\24\12\60\16\180", "\127\198\156\185\91\99\80"),[LUAOBFUSACTOR_DECRYPT_STR_0("\211\22\205\247", "\190\149\122\172\144\199\107\89")]=LUAOBFUSACTOR_DECRYPT_STR_0("\13\58\197\241\249\53\9\244\221\241\62\10\227\205\251\62\0\242\234", "\158\82\101\145\158"),[LUAOBFUSACTOR_DECRYPT_STR_0("\92\247\17\2", "\36\16\158\98\118")]=colorNames,[LUAOBFUSACTOR_DECRYPT_STR_0("\228\19\197\250\77\228\51", "\133\160\118\163\155\56\136\71")]=LUAOBFUSACTOR_DECRYPT_STR_0("\198\183\99\226\186\26", "\213\150\194\17\146\214\127"),[LUAOBFUSACTOR_DECRYPT_STR_0("\56\168\168\216\68\165\161\61", "\86\123\201\196\180\38\196\194")]=function(val)
+		SettingsTab:Dropdown({[LUAOBFUSACTOR_DECRYPT_STR_0("\44\171\139\215", "\187\98\202\230\178\72")]=LUAOBFUSACTOR_DECRYPT_STR_0("\21\238\163\55\70\36\161\139\30\10\2\238\168\63\88", "\42\65\129\196\80"),[LUAOBFUSACTOR_DECRYPT_STR_0("\36\70\92\221", "\142\98\42\61\186\119\103\98")]=LUAOBFUSACTOR_DECRYPT_STR_0("\7\128\54\7\63\184\14\13\27\176\14\7\42\140\7\4\61\188\22", "\104\88\223\98"),[LUAOBFUSACTOR_DECRYPT_STR_0("\104\254\241\218", "\141\36\151\130\174\98")]=colorNames,[LUAOBFUSACTOR_DECRYPT_STR_0("\160\127\196\12\145\118\214", "\109\228\26\162")]=LUAOBFUSACTOR_DECRYPT_STR_0("\110\240\239\104\236\227", "\134\62\133\157\24\128"),[LUAOBFUSACTOR_DECRYPT_STR_0("\36\164\22\213\45\176\213\12", "\182\103\197\122\185\79\209")]=function(val)
 			if COLOR_PALETTE[val] then
 				Theme.ToggleON = Color3.fromHSV(COLOR_PALETTE[val], 0.75, 1);
 				Library:ApplyTheme(nil);
 			end
 		end});
-		local bgOptions = {[LUAOBFUSACTOR_DECRYPT_STR_0("\199\225\205\172\255\168\251\163\246\235\210", "\207\151\136\185")]=Color3.fromRGB(10, 10, 12),[LUAOBFUSACTOR_DECRYPT_STR_0("\133\138\44\140\125\127\121\188\195\24\151\102\104\125\173", "\17\200\227\72\226\20\24")]=Color3.fromRGB(15, 12, 18),[LUAOBFUSACTOR_DECRYPT_STR_0("\148\64\9\220\137\214\253\250\169", "\159\208\33\123\183\169\145\143")]=Color3.fromRGB(35, 35, 40),[LUAOBFUSACTOR_DECRYPT_STR_0("\220\91\46\47\178\120\52\35\247", "\86\146\58\88")]=Color3.fromRGB(20, 22, 28),[LUAOBFUSACTOR_DECRYPT_STR_0("\124\218\239\208\238\219\51\254", "\154\56\191\138\160\206\137\86")]=Color3.fromRGB(25, 12, 12),[LUAOBFUSACTOR_DECRYPT_STR_0("\160\86\231\130\111\46\193\235\148\92\240\137", "\172\230\57\149\231\28\90\225")]=Color3.fromRGB(12, 20, 12)};
+		local bgOptions = {[LUAOBFUSACTOR_DECRYPT_STR_0("\195\142\245\116\8\8\209\139\224\116\11", "\40\147\231\129\23\96")]=Color3.fromRGB(10, 10, 12),[LUAOBFUSACTOR_DECRYPT_STR_0("\88\241\136\75\178\171\212\97\184\188\80\169\188\208\112", "\188\21\152\236\37\219\204")]=Color3.fromRGB(15, 12, 18),[LUAOBFUSACTOR_DECRYPT_STR_0("\100\232\37\7\0\206\37\9\89", "\108\32\137\87")]=Color3.fromRGB(35, 35, 40),[LUAOBFUSACTOR_DECRYPT_STR_0("\132\233\22\191\111\219\71\76\175", "\57\202\136\96\198\79\153\43")]=Color3.fromRGB(20, 22, 28),[LUAOBFUSACTOR_DECRYPT_STR_0("\143\38\175\183\205\149\253\175", "\152\203\67\202\199\237\199")]=Color3.fromRGB(25, 12, 12),[LUAOBFUSACTOR_DECRYPT_STR_0("\220\76\178\10\12\97\57\193\232\70\165\1", "\134\154\35\192\111\127\21\25")]=Color3.fromRGB(12, 20, 12)};
 		local bgList = {};
 		for n in pairs(bgOptions) do
 			table.insert(bgList, n);
 		end
 		table.sort(bgList);
-		SettingsTab:Dropdown({[LUAOBFUSACTOR_DECRYPT_STR_0("\44\171\139\215", "\187\98\202\230\178\72")]=LUAOBFUSACTOR_DECRYPT_STR_0("\3\224\167\59\77\51\238\177\62\78\97\194\171\60\69\51", "\42\65\129\196\80"),[LUAOBFUSACTOR_DECRYPT_STR_0("\36\70\92\221", "\142\98\42\61\186\119\103\98")]=LUAOBFUSACTOR_DECRYPT_STR_0("\7\128\32\15\8\173\7\27\61\171\49\13\52\186\1\28", "\104\88\223\98"),[LUAOBFUSACTOR_DECRYPT_STR_0("\104\254\241\218", "\141\36\151\130\174\98")]=bgList,[LUAOBFUSACTOR_DECRYPT_STR_0("\160\127\196\12\145\118\214", "\109\228\26\162")]=LUAOBFUSACTOR_DECRYPT_STR_0("\110\236\233\123\232\166\124\233\252\123\235", "\134\62\133\157\24\128"),[LUAOBFUSACTOR_DECRYPT_STR_0("\36\164\22\213\45\176\213\12", "\182\103\197\122\185\79\209")]=function(val)
+		SettingsTab:Dropdown({[LUAOBFUSACTOR_DECRYPT_STR_0("\150\39\4\15", "\178\216\70\105\106\64")]=LUAOBFUSACTOR_DECRYPT_STR_0("\29\42\121\253\206\199\219\149\49\47\58\213\198\217\219\146", "\224\95\75\26\150\169\181\180"),[LUAOBFUSACTOR_DECRYPT_STR_0("\45\214\217\47", "\22\107\186\184\72\36\204")]=LUAOBFUSACTOR_DECRYPT_STR_0("\216\130\6\73\62\245\184\55\75\26\212\184\40\75\13\243", "\110\135\221\68\46"),[LUAOBFUSACTOR_DECRYPT_STR_0("\207\63\31\255", "\91\131\86\108\139\174\211")]=bgList,[LUAOBFUSACTOR_DECRYPT_STR_0("\223\46\190\22\72\247\63", "\61\155\75\216\119")]=LUAOBFUSACTOR_DECRYPT_STR_0("\52\162\166\63\80\73\255\8\170\177\55", "\189\100\203\210\92\56\105"),[LUAOBFUSACTOR_DECRYPT_STR_0("\12\80\241\36\45\80\254\35", "\72\79\49\157")]=function(val)
 			if bgOptions[val] then
 				Theme.WindowBG = bgOptions[val];
 				local h, s, v = Color3.toHSV(Theme.WindowBG);
@@ -1480,23 +1579,23 @@ Library.Window = function(self, options)
 			end
 		end});
 		SettingsTab:Spacer(10);
-		SettingsTab:Label({[LUAOBFUSACTOR_DECRYPT_STR_0("\199\130\249\99", "\40\147\231\129\23\96")]=LUAOBFUSACTOR_DECRYPT_STR_0("\70\225\159\81\190\161", "\188\21\152\236\37\219\204"),[LUAOBFUSACTOR_DECRYPT_STR_0("\97\229\62\11\78", "\108\32\137\87")]=Enum.TextXAlignment.Center});
-		SettingsTab:Slider({[LUAOBFUSACTOR_DECRYPT_STR_0("\132\233\13\163", "\57\202\136\96\198\79\153\43")]=LUAOBFUSACTOR_DECRYPT_STR_0("\134\42\164\174\128\174\226\174\39\234\133\185\137\184\152\42\176\162", "\152\203\67\202\199\237\199"),[LUAOBFUSACTOR_DECRYPT_STR_0("\220\79\161\8", "\134\154\35\192\111\127\21\25")]=LUAOBFUSACTOR_DECRYPT_STR_0("\135\25\34\53\19\219\162\35", "\178\216\70\105\106\64"),[LUAOBFUSACTOR_DECRYPT_STR_0("\18\34\116", "\224\95\75\26\150\169\181\180")]=50,[LUAOBFUSACTOR_DECRYPT_STR_0("\38\219\192", "\22\107\186\184\72\36\204")]=250,[LUAOBFUSACTOR_DECRYPT_STR_0("\195\184\34\79\27\235\169", "\110\135\221\68\46")]=100,[LUAOBFUSACTOR_DECRYPT_STR_0("\192\55\0\231\204\178\56\232", "\91\131\86\108\139\174\211")]=function(val)
+		SettingsTab:Label({[LUAOBFUSACTOR_DECRYPT_STR_0("\188\181\41\168", "\220\232\208\81")]=LUAOBFUSACTOR_DECRYPT_STR_0("\198\167\246\36\41\87", "\193\149\222\133\80\76\58"),[LUAOBFUSACTOR_DECRYPT_STR_0("\231\81\70\213\200", "\178\166\61\47")]=Enum.TextXAlignment.Center});
+		SettingsTab:Slider({[LUAOBFUSACTOR_DECRYPT_STR_0("\213\75\229\127", "\94\155\42\136\26\170")]=LUAOBFUSACTOR_DECRYPT_STR_0("\169\54\40\188\137\54\60\176\128\127\4\129\170\127\21\188\158\58", "\213\228\95\70"),[LUAOBFUSACTOR_DECRYPT_STR_0("\12\183\195\131", "\23\74\219\162\228")]=LUAOBFUSACTOR_DECRYPT_STR_0("\6\217\109\144\8\48\252\67", "\91\89\134\38\207"),[LUAOBFUSACTOR_DECRYPT_STR_0("\105\231\198", "\71\36\142\168\86\115\176")]=50,[LUAOBFUSACTOR_DECRYPT_STR_0("\242\160\106", "\41\191\193\18\223\99\222\54")]=250,[LUAOBFUSACTOR_DECRYPT_STR_0("\143\35\193\43\191\167\50", "\202\203\70\167\74")]=100,[LUAOBFUSACTOR_DECRYPT_STR_0("\15\0\208\63\115\45\2\215", "\17\76\97\188\83")]=function(val)
 			Library:UpdateKButtonSize();
 		end});
-		SettingsTab:Slider({[LUAOBFUSACTOR_DECRYPT_STR_0("\213\42\181\18", "\61\155\75\216\119")]=LUAOBFUSACTOR_DECRYPT_STR_0("\49\130\242\15\91\8\209\1", "\189\100\203\210\92\56\105"),[LUAOBFUSACTOR_DECRYPT_STR_0("\9\93\252\47", "\72\79\49\157")]=LUAOBFUSACTOR_DECRYPT_STR_0("\183\143\22\169\129\131\50\189\132\181", "\220\232\208\81"),[LUAOBFUSACTOR_DECRYPT_STR_0("\216\183\235", "\193\149\222\133\80\76\58")]=0.4,[LUAOBFUSACTOR_DECRYPT_STR_0("\235\92\87", "\178\166\61\47")]=1.5,[LUAOBFUSACTOR_DECRYPT_STR_0("\223\79\238\123\223\50\239", "\94\155\42\136\26\170")]=1,[LUAOBFUSACTOR_DECRYPT_STR_0("\167\62\42\185\134\62\37\190", "\213\228\95\70")]=function(val)
+		SettingsTab:Slider({[LUAOBFUSACTOR_DECRYPT_STR_0("\171\38\212\50", "\195\229\71\185\87\80\227\43")]=LUAOBFUSACTOR_DECRYPT_STR_0("\213\213\64\99\236\225\240\5", "\143\128\156\96\48"),[LUAOBFUSACTOR_DECRYPT_STR_0("\158\221\241\21", "\119\216\177\144\114")]=LUAOBFUSACTOR_DECRYPT_STR_0("\246\22\222\87\192\26\250\67\197\44", "\34\169\73\153"),[LUAOBFUSACTOR_DECRYPT_STR_0("\135\229\5", "\235\202\140\107")]=0.4,[LUAOBFUSACTOR_DECRYPT_STR_0("\33\117\44", "\165\108\20\84\200\137\71\151")]=1.5,[LUAOBFUSACTOR_DECRYPT_STR_0("\94\177\45\137\111\184\63", "\232\26\212\75")]=1,[LUAOBFUSACTOR_DECRYPT_STR_0("\20\72\126\228\245\54\74\121", "\151\87\41\18\136")]=function(val)
 			if Library.MainScale then
 				Library.MainScale.Scale = val;
 			end
 		end});
-		SettingsTab:Input({[LUAOBFUSACTOR_DECRYPT_STR_0("\4\186\207\129", "\23\74\219\162\228")]=LUAOBFUSACTOR_DECRYPT_STR_0("\13\233\65\168\55\60\166\109\170\34", "\91\89\134\38\207"),[LUAOBFUSACTOR_DECRYPT_STR_0("\98\226\201\49", "\71\36\142\168\86\115\176")]=LUAOBFUSACTOR_DECRYPT_STR_0("\224\158\70\176\4\185\90\76\244\164\107", "\41\191\193\18\223\99\222\54"),[LUAOBFUSACTOR_DECRYPT_STR_0("\143\35\193\43\191\167\50", "\202\203\70\167\74")]=DEFAULTS.ToggleKey,[LUAOBFUSACTOR_DECRYPT_STR_0("\28\13\221\48\116\36\14\208\55\116\62", "\17\76\97\188\83")]=LUAOBFUSACTOR_DECRYPT_STR_0("\181\53\220\36\35\195\96\166\156\105\151\121", "\195\229\71\185\87\80\227\43"),[LUAOBFUSACTOR_DECRYPT_STR_0("\195\253\12\92\237\225\255\11", "\143\128\156\96\48")]=function(val)
+		SettingsTab:Input({[LUAOBFUSACTOR_DECRYPT_STR_0("\117\174\199\213", "\158\59\207\170\176")]=LUAOBFUSACTOR_DECRYPT_STR_0("\123\81\52\78\128\74\30\24\76\149", "\236\47\62\83\41"),[LUAOBFUSACTOR_DECRYPT_STR_0("\220\165\33\60", "\226\154\201\64\91\202")]=LUAOBFUSACTOR_DECRYPT_STR_0("\254\118\41\23\77\187\205\76\54\29\83", "\220\161\41\125\120\42"),[LUAOBFUSACTOR_DECRYPT_STR_0("\152\116\166\15\169\125\180", "\110\220\17\192")]=DEFAULTS.ToggleKey,[LUAOBFUSACTOR_DECRYPT_STR_0("\68\117\53\25\238\63\254\171\112\124\38", "\199\20\25\84\122\139\87\145")]=LUAOBFUSACTOR_DECRYPT_STR_0("\119\27\216\189\8\170\108\12\196\224\85\164", "\138\39\105\189\206\123"),[LUAOBFUSACTOR_DECRYPT_STR_0("\60\6\133\33\241\248\204\244", "\159\127\103\233\77\147\153\175")]=function(val)
 			local clean = string.upper(string.gsub(val, " ", ""));
-			Library.Flags[LUAOBFUSACTOR_DECRYPT_STR_0("\135\238\196\29\16\191\221\245\57\18\161", "\119\216\177\144\114")] = clean;
+			Library.Flags[LUAOBFUSACTOR_DECRYPT_STR_0("\56\207\208\165\71\204\11\245\207\175\89", "\171\103\144\132\202\32")] = clean;
 		end});
 		if (not Library.CurrentTab and (#TabButtons > 0)) then
 			Library.CurrentTab = TabButtons[1].Name;
 		end
-		Library:ApplyTheme(Library.Flags[LUAOBFUSACTOR_DECRYPT_STR_0("\246\22\218\87\219\59\252\76\221\29\241\71\196\44", "\34\169\73\153")] or LUAOBFUSACTOR_DECRYPT_STR_0("\142\233\13\138\191\224\31", "\235\202\140\107"));
+		Library:ApplyTheme(Library.Flags[LUAOBFUSACTOR_DECRYPT_STR_0("\47\16\202\25\2\61\236\2\4\27\225\9\29\42", "\108\112\79\137")] or LUAOBFUSACTOR_DECRYPT_STR_0("\27\199\114\41\184\13\253", "\85\95\162\20\72\205\97\137"));
 	end;
 	return WindowAPI;
 end;
